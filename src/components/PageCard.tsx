@@ -1,0 +1,83 @@
+import {
+  Box,
+  Card,
+  Divider,
+  Group,
+  Text,
+  Title,
+  UnstyledButton,
+} from "@mantine/core";
+import { ArrowBack } from "@nine-thirty-five/material-symbols-react/rounded";
+import { useNavigate } from "react-router";
+import classes from "./PageCard.module.css";
+
+// ─── Types ───────────────────────────────────────────────────────────────────
+
+interface PageCardProps {
+  title: string;
+  subtext?: string;
+  action?: React.ReactNode;
+  withBackground?: boolean;
+  children?: React.ReactNode;
+  onBack?: () => void;
+}
+
+// ─── Component ────────────────────────────────────────────────────────────────
+
+export function PageCard({
+  title,
+  subtext,
+  action,
+  withBackground = false,
+  children,
+  onBack,
+}: PageCardProps) {
+  const navigate = useNavigate();
+
+  const handleBack = () => {
+    if (onBack) {
+      onBack();
+    } else {
+      navigate(-1);
+    }
+  };
+
+  return (
+    <Card
+      withBorder
+      radius="md"
+      padding={0}
+      className={classes.root}
+      pos="relative"
+    >
+      {withBackground && <Box className={classes.bgImage} />}
+
+      {/* ── Header ── */}
+      <Group justify="space-between" px="lg" py="sm" wrap="nowrap">
+        <Group gap="xs" wrap="nowrap">
+          <UnstyledButton onClick={handleBack} className={classes.backButton}>
+            <ArrowBack width="1.25rem" height="1.25rem"  fill="currentColor" />
+          </UnstyledButton>
+
+          <Group gap="0.5rem" align="baseline" wrap="nowrap">
+            <Title order={5} fw={800} tt="uppercase" c="jltBlue.8">
+              {title}
+            </Title>
+            {subtext && (
+              <Text size="sm" c="dimmed" fs="italic">
+                ({subtext})
+              </Text>
+            )}
+          </Group>
+        </Group>
+
+        {action && <Box style={{ flexShrink: 0 }}>{action}</Box>}
+      </Group>
+
+      <Divider size={"sm"} w={"96%"} mx={"auto"} />
+
+      {/* ── Body ── */}
+      <Box className={classes.body}>{children}</Box>
+    </Card>
+  );
+}

@@ -24,7 +24,7 @@ export default function AccountSettings() {
   if (!user || !rawUser) return null;
 
   return (
-    <Flex justify={"center"} align={"center"} mih={"100%"}>
+    <Flex justify="center" align="center" mih="100%">
       <Card withBorder radius="lg" className={classes.card} p={0}>
         {/* Faded background */}
         <BackgroundImage
@@ -44,7 +44,7 @@ export default function AccountSettings() {
               grow
               style={{
                 background: "linear-gradient(135deg, #0D2842, #4E6174)",
-                height: 68,
+                height: "4.25rem",
                 color: "white",
                 fontWeight: 500,
               }}
@@ -60,7 +60,6 @@ export default function AccountSettings() {
                   onChangeAvatar={openAvatar}
                   isEditing={isEditing}
                   onEdit={() => setIsEditing(true)}
-                  onCancel={() => setIsEditing(false)}
                 />
                 <ProfileForm
                   user={user}

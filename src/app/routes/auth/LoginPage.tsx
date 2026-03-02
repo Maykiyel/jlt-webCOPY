@@ -48,17 +48,17 @@ export default function LoginPage() {
         pos="absolute"
         bottom={0}
       />
-      <Image src={wave1} w={"71.4%"} pos="absolute" bottom={0} />
-      <Image src={wave2} w={"64.5%"} pos="absolute" bottom={0} left={-10} />
+      <Image src={wave1} w={"71.4vw"} pos="absolute" bottom={0} />
+      <Image src={wave2} w={"64.5vw"} pos="absolute" bottom={0} left={-10} />
       <Image
         src={wave3}
-        w={"38.1%"}
+        w={"38.1vw"}
         pos="absolute"
         bottom={0}
         right={0}
         style={{ zIndex: -1 }}
       />
-      <Box pos="absolute" top={"19.35%"} left={"47.66%"}>
+      <Box pos="absolute" top={"19.35vh"} left={"47.66vw"}>
         <LoginForm onSubmit={handleSubmit} isLoading={isPending} />
       </Box>
     </div>

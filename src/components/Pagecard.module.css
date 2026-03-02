@@ -1,0 +1,35 @@
+.root {
+  min-height: 25rem;
+}
+
+.backButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--mantine-color-jltBlue-8);
+  border-radius: var(--mantine-radius-sm);
+  padding: 0.25rem;
+  transition: background-color 120ms ease;
+}
+
+.backButton:hover {
+  background-color: var(--mantine-color-gray-1);
+}
+
+.bgImage {
+  position: absolute;
+  inset: 0;
+  background-image: url("@/assets/abstract-bg.png");
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+  opacity: 0.15;
+  pointer-events: none;
+  z-index: 0;
+  border-radius: inherit;
+}
+
+.body {
+  position: relative;
+  z-index: 1;
+}

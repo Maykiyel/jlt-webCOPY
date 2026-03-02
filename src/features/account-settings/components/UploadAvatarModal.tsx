@@ -1,12 +1,5 @@
 import { useState, useRef } from "react";
-import {
-  Modal,
-  Button,
-  Stack,
-  Text,
-  Image,
-  Group,
-} from "@mantine/core";
+import { Modal, Button, Stack, Text, Image, Group } from "@mantine/core";
 import {
   Dropzone,
   IMAGE_MIME_TYPE,
@@ -108,22 +101,22 @@ export function UploadAvatarModal({
             >
               <Dropzone.Accept>
                 <CloudUpload
-                  width={78}
-                  height={84}
+                  width="4.875rem"
+                  height="5.25rem"
                   color="var(--mantine-color-jltBlue-8)"
                 />
               </Dropzone.Accept>
               <Dropzone.Reject>
                 <Cancel
-                  width={52}
-                  height={52}
+                  width="3.25rem"
+                  height="3.25rem"
                   color="var(--mantine-color-red-6)"
                 />
               </Dropzone.Reject>
               <Dropzone.Idle>
                 <CloudUpload
-                  width={52}
-                  height={52}
+                  width="3.25rem"
+                  height="3.25rem"
                   color="var(--mantine-color-gray-5)"
                 />
               </Dropzone.Idle>
@@ -132,7 +125,7 @@ export function UploadAvatarModal({
                 <Text fw={600} size="sm">
                   Drag and drop image to upload
                 </Text>
-                <Text size="xs" c="dimmed" ta="center" maw={220}>
+                <Text size="xs" c="dimmed" ta="center" maw="13.75rem">
                   Your image will be private until you publish your profile
                 </Text>
               </Stack>
@@ -156,20 +149,20 @@ export function UploadAvatarModal({
               onLoad={(e) =>
                 URL.revokeObjectURL((e.target as HTMLImageElement).src)
               }
-              h={200}
-              w={200}
+              h="12.5rem"
+              w="12.5rem"
               fit="cover"
               radius="xl"
               style={{ borderRadius: "50%" }}
             />
-            <Text size="xs" c="dimmed" truncate maw={250}>
+            <Text size="xs" c="dimmed" truncate maw="15.625rem">
               {files[0]?.name}
             </Text>
             <Button
               variant="subtle"
               color="red"
               size="xs"
-              leftSection={<Delete width={14} height={14} />}
+              leftSection={<Delete width="0.875rem" height="0.875rem" />}
               onClick={() => setFiles([])}
             >
               Remove

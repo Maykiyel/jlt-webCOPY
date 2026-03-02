@@ -21,7 +21,7 @@ interface AppProviderProps {
 export function AppProvider({ children }: AppProviderProps) {
   return (
     <MantineProvider theme={theme}>
-      <Notifications position="top-right" />
+      <Notifications position="bottom-right" />
       <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
     </MantineProvider>
   );

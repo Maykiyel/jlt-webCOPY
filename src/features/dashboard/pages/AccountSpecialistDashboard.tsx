@@ -1,39 +1,35 @@
 import { useQuery } from "@tanstack/react-query";
-import { dashboardService } from "../services/dashboard.service";
-import { isAccountSpecialistDashboard } from "../types/dashboard";
-import type { User } from "@/types/api";
-import { Loader } from "@mantine/core";
+import { Stack } from "@mantine/core";
+import { fetchDashboard } from "../api/dashboard.service";
+import SocialMediaCards from "../components/SocialMediaCards";
+import StatsOverview from "../components/StatsOverview";
+import ClientsTable from "../components/ClientsTable";
 
-interface AccountSpecialistDashboardProps {
-  user: User;
-}
-
-export function AccountSpecialistDashboard({
-  user,
-}: AccountSpecialistDashboardProps) {
-  const { data, isLoading, error } = useQuery({
-    queryKey: ["dashboard", "account-specialist"],
-    queryFn: () => dashboardService.getDashboardData(),
+export default function AccountSpecialistDashboard() {
+  const { data: dashboard } = useQuery({
+    queryKey: ["dashboard"],
+    queryFn: fetchDashboard,
   });
 
-  if (isLoading) {
-    return <Loader size={"lg"} color="jltBlue" />;
-  }
+  return (
+    <Stack gap={"1rem"} px={"lg"}>
+      <SocialMediaCards />
 
-  if (error) {
-    return (
-      <div>
-        <p>Failed to load dashboard</p>
-        <p>{error.message}</p>
-      </div>
-    );
-  }
+      <StatsOverview
+        quotations={{
+          responded_count: dashboard?.quotations?.responded_count ?? 0,
+          requested_count: dashboard?.quotations?.requested_count ?? 0,
+        }}
+        shipments={{
+          ongoing_count: dashboard?.shipments?.ongoing_count ?? 0,
+          delivered_count: dashboard?.shipments?.delivered_count ?? 0,
+        }}
+      />
 
-  if (!data?.data || !isAccountSpecialistDashboard(data.data)) {
-    return <div>Invalid dashboard data</div>;
-  }
-
-  const dashboardData = data.data;
-
-  return <div>Account specialist dashboard</div>;
+      <ClientsTable
+        clients={dashboard?.clients?.clients ?? []}
+        totalCount={dashboard?.clients?.total_count ?? 0}
+      />
+    </Stack>
+  );
 }

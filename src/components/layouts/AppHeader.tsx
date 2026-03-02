@@ -77,6 +77,13 @@ function UserMenu() {
       width={200}
       opened={opened}
       onChange={setOpened}
+      styles={{
+        dropdown: {
+          padding: 0,
+          "--menu-item-hover": "var(--mantine-color-jltOrange-5)",
+          "--popover-border-color": "#bebebe",
+        } as React.CSSProperties,
+      }}
     >
       <Menu.Target>
         <UnstyledButton
@@ -151,6 +158,16 @@ function UserMenu() {
           leftSection={<Person width={16} height={16} color="currentColor" />}
           onClick={handleAccountSettings}
           c="jltBlue.8"
+          styles={{
+            item: {
+              borderTopLeftRadius:
+                "var(--popover-radius, var(--mantine-radius-default))",
+              borderTopRightRadius:
+                "var(--popover-radius, var(--mantine-radius-default))",
+              borderBottomLeftRadius: 0,
+              borderBottomRightRadius: 0,
+            },
+          }}
         >
           Account Settings
         </Menu.Item>
@@ -159,15 +176,27 @@ function UserMenu() {
           styles={{
             divider: {
               borderWidth: 1.5,
-              scale: "105%",
+              scale: "100.5%",
+              margin: 0,
+              borderColor: "#bebebe",
             },
           }}
         />
 
         <Menu.Item
           leftSection={<Logout width={16} height={16} />}
-          color="red"
+          c="jltBlue.8"
           onClick={handleLogout}
+          styles={{
+            item: {
+              borderTopLeftRadius: 0,
+              borderTopRightRadius: 0,
+              borderBottomLeftRadius:
+                "var(--popover-radius, var(--mantine-radius-default))",
+              borderBottomRightRadius:
+                "var(--popover-radius, var(--mantine-radius-default))",
+            },
+          }}
         >
           Log Out
         </Menu.Item>

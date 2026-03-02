@@ -74,7 +74,7 @@ export function ChangePasswordModal({
           </Text>
           <Divider w="100%" />
 
-          <CheckCircle width={80} height={80} color="green" />
+          <CheckCircle width={"5rem"} height={"5rem"} color="green" />
 
           <Text fw={500} size="lg">
             Password Updated!
@@ -84,7 +84,12 @@ export function ChangePasswordModal({
             to log in.
           </Text>
 
-          <Button mt="lg" w={123} color="jltAccent.7" onClick={handleClose}>
+          <Button
+            mt="lg"
+            w={"7.688rem"}
+            color="jltAccent.7"
+            onClick={handleClose}
+          >
             OKAY
           </Button>
         </Stack>

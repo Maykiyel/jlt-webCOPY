@@ -29,13 +29,13 @@ interface NavItem {
 const NAV_ITEMS: NavItem[] = [
   {
     id: "dashboard",
-    icon: <Dashboard width={32} height={32} />,
+    icon: <Dashboard width="2rem" height="2rem" />,
     label: "Dashboard",
     path: "/",
   },
   {
     id: "leads",
-    icon: <DiversityTwo width={32} height={32} />,
+    icon: <DiversityTwo width="2rem" height="2rem" />,
     label: "Leads",
     subItems: [
       { label: "Queries", path: "/leads/queries" },
@@ -45,7 +45,7 @@ const NAV_ITEMS: NavItem[] = [
   },
   {
     id: "shipments",
-    icon: <BoxIcon width={32} height={32} />,
+    icon: <BoxIcon width="2rem" height="2rem" />,
     label: "Shipments",
     subItems: [
       { label: "Ongoing", path: "/shipments/ongoing" },
@@ -54,7 +54,7 @@ const NAV_ITEMS: NavItem[] = [
   },
   {
     id: "quotations",
-    icon: <RequestQuote width={32} height={32} />,
+    icon: <RequestQuote width="2rem" height="2rem" />,
     label: "Quotations",
     subItems: [
       { label: "Requests", path: "/quotations/requests" },
@@ -65,7 +65,7 @@ const NAV_ITEMS: NavItem[] = [
   },
   {
     id: "accounts",
-    icon: <ManageAccounts width={32} height={32} />,
+    icon: <ManageAccounts width="2rem" height="2rem" />,
     label: "Accounts",
     subItems: [
       { label: "Clients", path: "/accounts/clients" },
@@ -74,7 +74,7 @@ const NAV_ITEMS: NavItem[] = [
   },
   {
     id: "tools",
-    icon: <FolderManaged width={32} height={32} />,
+    icon: <FolderManaged width="2rem" height="2rem" />,
     label: "Tools",
     subItems: [
       { label: "Services", path: "/tools/services" },
@@ -84,8 +84,9 @@ const NAV_ITEMS: NavItem[] = [
   },
 ];
 
-const BTN_HEIGHT = 56;
-const RAIL_PADDING_TOP = 18;
+const BTN_HEIGHT_REM = 5;
+const PILL_HEIGHT_REM = 3.5;
+const RAIL_PADDING_TOP_REM = 1.125;
 
 // Helpers
 
@@ -119,7 +120,9 @@ export function AppSidebar() {
   const panelOpen = !!activeItem?.subItems?.length;
 
   const pillTop =
-    activeIndex >= 0 ? RAIL_PADDING_TOP + activeIndex * BTN_HEIGHT : 0;
+    activeIndex >= 0
+      ? `${RAIL_PADDING_TOP_REM + activeIndex * BTN_HEIGHT_REM + (BTN_HEIGHT_REM - PILL_HEIGHT_REM) / 2}rem`
+      : "0rem";
 
   function handleIconClick(item: NavItem) {
     if (item.path) {
@@ -135,7 +138,7 @@ export function AppSidebar() {
       pos="relative"
       display="flex"
       h="100%"
-      style={{ flexDirection: "row" }}
+      style={{ flexDirection: "row", overflow: "visible" }}
     >
       {/* ── Sub-item panel ── */}
       <Box
@@ -148,9 +151,9 @@ export function AppSidebar() {
           <Box
             className={classes.subPanelInner}
             data-active
-            pl="15"
+            pl="lg"
             py="xl"
-            pt={28}
+            pt="1.125rem"
           >
             <Stack gap="md">
               {activeItem.subItems.map((sub) => {
@@ -190,9 +193,9 @@ export function AppSidebar() {
         align="center"
         direction="column"
         wrap="wrap"
-        pt={RAIL_PADDING_TOP}
+        pt="1.125rem"
         style={{ zIndex: 2, flexShrink: 0, overflow: "visible" }}
-        w={89}
+        w="5.5625rem"
         h="100%"
       >
         {/* Travelling pill */}
@@ -200,7 +203,7 @@ export function AppSidebar() {
           className={classes.activePill}
           data-visible={activeIndex >= 0 || undefined}
           data-panel-open={panelOpen || undefined}
-          style={{ transform: `translateY(${pillTop}px)` }}
+          style={{ transform: `translateY(${pillTop})` }}
         />
 
         {/* Nav icon buttons */}
@@ -227,7 +230,7 @@ export function AppSidebar() {
                 data-active={active || undefined}
                 className={classes.iconBtn}
                 w="100%"
-                h={BTN_HEIGHT}
+                h={`${BTN_HEIGHT_REM}rem`}
                 display="flex"
                 style={{
                   alignItems: "center",

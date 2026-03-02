@@ -1,0 +1,18 @@
+.dot {
+  width: 0.625rem;
+  height: 0.625rem;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.tableHeader {
+  border-bottom: 0.0625rem solid var(--mantine-jltAccent-2);
+}
+
+.tableHeadRow {
+  background-color: var(--mantine-color-jltAccent-7);
+}
+
+.tableHeadRow:hover {
+  background-color: var(--mantine-color-jltAccent-6) !important;
+}

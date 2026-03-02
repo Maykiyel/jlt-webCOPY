@@ -71,7 +71,7 @@ export function ProfileForm({
       id="profile-form"
       onSubmit={handleSubmit((v) => updateMutation.mutate(v))}
     >
-      <Stack gap="md" px={50}>
+      <Stack gap="md" px={"3.125rem"}>
         {/* Row 1 */}
         <SimpleGrid cols={2}>
           <TextInputField

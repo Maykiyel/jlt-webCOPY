@@ -1,9 +1,9 @@
 :root {
-  --pill-height: 56px;
-  --scoop: 22px;
-  --scoop-offset: 8px;
-  --panel-width: 127px;
-  --rail-width: 89px;
+  --pill-height: 3.5rem;
+  --scoop: 2.75rem;
+  --scoop-offset: 1.375rem;
+  --panel-width: 7.9375rem;
+  --rail-width: 5.5625rem;
 }
 
 .activePill {
@@ -91,9 +91,9 @@
 .subPanel::before {
   content: "";
   position: absolute;
-  inset: 0 0 0 -2px;
+  inset: 0 0 0 -0.125rem;
   border-radius: inherit;
-  padding: 2px;
+  padding: 0.125rem;
   background: linear-gradient(
     180deg,
     var(--mantine-color-jltOrange-5) 0%,
@@ -129,8 +129,8 @@
 
 .subItem {
   width: 100%;
-  padding: 7px 10px;
-  border-radius: 6px;
+  padding: 0.4375rem 0.625rem;
+  border-radius: 0.375rem;
 }
 
 .subItem:hover span {

@@ -8,6 +8,11 @@
   box-sizing: border-box;
 }
 
+html {
+  /* Fluid scaling baseline: 1280px = 16px, min 14px, max 18px */
+  font-size: clamp(14px, 1.25vw, 18px);
+}
+
 html,
 body,
 #root {
