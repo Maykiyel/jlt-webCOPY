@@ -37,18 +37,18 @@ export default function ClientsTable({
         <Table highlightOnHover>
           <Table.Thead>
             <Table.Tr className={classes.tableHeadRow}>
-              <Table.Th>
-                <Text size="xs" fw={700} c="white">
+              <Table.Th w={"15%"}>
+                <Text size="xs" fw={500} c="white">
                   ID NO.
                 </Text>
               </Table.Th>
-              <Table.Th>
-                <Text size="xs" fw={700} c="white">
+              <Table.Th w={"65%"}>
+                <Text size="xs" fw={500} c="white">
                   FULL NAME
                 </Text>
               </Table.Th>
-              <Table.Th>
-                <Text size="xs" fw={700} c="white">
+              <Table.Th w={"20%"}>
+                <Text size="xs" fw={500} c="white">
                   TOTAL NO. OF SHIPMENT
                 </Text>
               </Table.Th>
@@ -66,13 +66,13 @@ export default function ClientsTable({
             ) : (
               clients.map((client, i) => (
                 <Table.Tr key={client.id ?? i}>
-                  <Table.Td>
+                  <Table.Td w={"15%"}>
                     <Text size="sm">{client.id}</Text>
                   </Table.Td>
-                  <Table.Td>
+                  <Table.Td w={"65%"}>
                     <Text size="sm">{client.full_name}</Text>
                   </Table.Td>
-                  <Table.Td>
+                  <Table.Td w={"20%"}>
                     <Text size="sm">{client.total_shipment}</Text>
                   </Table.Td>
                 </Table.Tr>
