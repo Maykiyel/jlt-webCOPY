@@ -18,6 +18,7 @@ interface PageCardProps {
   subtext?: string;
   action?: React.ReactNode;
   withBackground?: boolean;
+  fullHeight?: boolean;
   children?: React.ReactNode;
   onBack?: () => void;
 }
@@ -29,6 +30,7 @@ export function PageCard({
   subtext,
   action,
   withBackground = false,
+  fullHeight = false,
   children,
   onBack,
 }: PageCardProps) {
@@ -49,12 +51,22 @@ export function PageCard({
       shadow={"sm"}
       padding={0}
       className={classes.root}
+      style={{
+        height: fullHeight
+          ? "calc(100vh - var(--app-shell-header-height) - var(--mantine-spacing-md) * 2)"
+          : undefined,
+      }}
       pos="relative"
     >
       {withBackground && <Box className={classes.bgImage} />}
 
       {/* ── Header ── */}
-      <Group justify="space-between" p="lg" wrap="nowrap">
+      <Group
+        justify="space-between"
+        p="lg"
+        wrap="nowrap"
+        className={classes.header}
+      >
         <Group gap="xs" wrap="nowrap">
           <UnstyledButton onClick={handleBack} className={classes.backButton}>
             <ArrowBack width="1.25rem" height="1.25rem" fill="currentColor" />
@@ -75,7 +87,7 @@ export function PageCard({
         {action && <Box style={{ flexShrink: 0 }}>{action}</Box>}
       </Group>
 
-      <Divider size={"sm"} w={"96%"} mx={"auto"} />
+      <Divider size={"sm"} w={"96%"} mx={"auto"} className={classes.divider} />
 
       {/* ── Body ── */}
       <Box className={classes.body} px={"xl"} py={"lg"}>
