@@ -53,13 +53,13 @@ function BillingSectionRows({
       <div className={classes.sectionHeader}>
         <Text className={classes.sectionTitle}>{section.title}</Text>
         <ActionIcon
-          variant="filled"
+          variant="subtle"
           color="jltBlue.8"
           className={classes.addButton}
           onClick={() =>
             fieldArray.append({
               description: "",
-              currency: currencies[0] ?? "",
+              currency: "",
               uom: "",
               amount: null,
             })
@@ -71,48 +71,114 @@ function BillingSectionRows({
       </div>
 
       <div className={classes.rows}>
+        {fieldArray.fields.length === 0 && <div className={classes.emptyRow} />}
         {fieldArray.fields.map((field, index) => (
-          <Grid key={field.id} gutter="sm" className={classes.row}>
-            <Grid.Col span={4}>
+          <Grid key={field.id} gutter={0} className={classes.row}>
+            <Grid.Col span={4} className={classes.cell}>
               <NativeSelectField
                 control={control}
                 name={`sections.${section.id}.${index}.description`}
                 label=""
-                data={["", ...section.available_charges]}
+                data={[
+                  { value: "", label: "SELECT RECEIPT CHARGES" },
+                  ...section.available_charges,
+                ]}
+                styles={{
+                  input: {
+                    border: 0,
+                    borderRadius: 0,
+                    background: "transparent",
+                    minHeight: "2.875rem",
+                    height: "2.875rem",
+                    color: "var(--mantine-color-jltBlue-8)",
+                    fontWeight: 500,
+                    fontSize: "0.8125rem",
+                    textTransform: "uppercase",
+                  },
+                }}
               />
             </Grid.Col>
 
-            <Grid.Col span={2}>
+            <Grid.Col span={2} className={classes.cell}>
               <NativeSelectField
                 control={control}
                 name={`sections.${section.id}.${index}.currency`}
                 label=""
-                data={["", ...currencies]}
+                data={[{ value: "", label: "CURRENCY" }, ...currencies]}
+                styles={{
+                  input: {
+                    border: 0,
+                    borderRadius: 0,
+                    background: "transparent",
+                    minHeight: "2.875rem",
+                    height: "2.875rem",
+                    color: "var(--mantine-color-jltBlue-8)",
+                    fontWeight: 500,
+                    fontSize: "0.8125rem",
+                    textTransform: "uppercase",
+                  },
+                }}
               />
             </Grid.Col>
 
-            <Grid.Col span={2}>
+            <Grid.Col span={2} className={classes.cell}>
               <NativeSelectField
                 control={control}
                 name={`sections.${section.id}.${index}.uom`}
                 label=""
-                data={["", ...uoms]}
+                data={[{ value: "", label: "UOM" }, ...uoms]}
+                styles={{
+                  input: {
+                    border: 0,
+                    borderRadius: 0,
+                    background: "transparent",
+                    minHeight: "2.875rem",
+                    height: "2.875rem",
+                    color: "var(--mantine-color-jltBlue-8)",
+                    fontWeight: 500,
+                    fontSize: "0.8125rem",
+                    textTransform: "uppercase",
+                  },
+                }}
               />
             </Grid.Col>
 
-            <Grid.Col span={3}>
-              <NumberInputField
-                control={control}
-                name={`sections.${section.id}.${index}.amount`}
-                label=""
-                placeholder="ENTER AMOUNT"
-                hideControls
-                min={0}
-                thousandSeparator=","
-              />
+            <Grid.Col span={3} className={classes.cell}>
+              <div className={classes.amountCell}>
+                <NumberInputField
+                  control={control}
+                  name={`sections.${section.id}.${index}.amount`}
+                  label=""
+                  hideControls
+                  min={0}
+                  thousandSeparator=","
+                  styles={{
+                    input: {
+                      border: 0,
+                      borderRadius: 0,
+                      background: "transparent",
+                      minHeight: "2.875rem",
+                      height: "2.875rem",
+                      color: "var(--mantine-color-jltBlue-8)",
+                      fontWeight: 500,
+                      fontSize: "0.8125rem",
+                      textAlign: "right",
+                    },
+                  }}
+                />
+                {(rows[index]?.amount === null ||
+                  rows[index]?.amount === undefined) && (
+                  <Text className={classes.amountPlaceholder}>
+                    ENTER AMOUNT
+                  </Text>
+                )}
+              </div>
             </Grid.Col>
 
-            <Grid.Col span={1} className={classes.deleteCell}>
+            <Grid.Col
+              span={1}
+              className={`${classes.cell} ${classes.deleteCell}`}
+            >
               <ActionIcon
                 variant="subtle"
                 color="red"

@@ -1,4 +1,5 @@
 import {
+  Button,
   Box,
   Divider,
   Group,
@@ -185,13 +186,15 @@ export function ComposeQuotationPage() {
       fullHeight
       action={
         editMode ? (
-          <AppButton
-            variant="secondary"
+          <Button
+            variant="subtle"
+            color="red"
             onClick={handleCancel}
-            style={{ color: "var(--mantine-color-red-6)" }}
+            px={0}
+            fw={500}
           >
             CANCEL
-          </AppButton>
+          </Button>
         ) : undefined
       }
     >

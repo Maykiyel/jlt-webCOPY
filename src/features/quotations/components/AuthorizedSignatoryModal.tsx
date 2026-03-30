@@ -179,28 +179,52 @@ export function AuthorizedSignatoryModal({
                 style={{ minHeight: "10rem", pointerEvents: "none" }}
               >
                 <Dropzone.Accept>
-                  <CloudUpload
-                    width="2rem"
-                    height="2rem"
-                    color="var(--mantine-color-jltBlue-8)"
-                  />
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "center",
+                      width: "100%",
+                    }}
+                  >
+                    <CloudUpload
+                      width="2rem"
+                      height="2rem"
+                      color="var(--mantine-color-jltBlue-8)"
+                    />
+                  </div>
                 </Dropzone.Accept>
                 <Dropzone.Reject>
-                  <CloudUpload
-                    width="2rem"
-                    height="2rem"
-                    color="var(--mantine-color-red-6)"
-                  />
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "center",
+                      width: "100%",
+                    }}
+                  >
+                    <CloudUpload
+                      width="3rem"
+                      height="3rem"
+                      color="var(--mantine-color-red-6)"
+                    />
+                  </div>
                   <Text size="xs" c="red" ta="center">
                     Only PNG or JPG files are accepted
                   </Text>
                 </Dropzone.Reject>
                 <Dropzone.Idle>
-                  <CloudUpload
-                    width="2rem"
-                    height="2rem"
-                    color="var(--mantine-color-gray-6)"
-                  />
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "center",
+                      width: "100%",
+                    }}
+                  >
+                    <CloudUpload
+                      width="3rem"
+                      height="3rem"
+                      color="var(--mantine-color-gray-6)"
+                    />
+                  </div>
                   <Text size="sm" fw={500} ta="center">
                     Upload Signature
                   </Text>
