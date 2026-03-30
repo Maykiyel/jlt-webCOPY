@@ -1,3 +1,11 @@
+import type {
+  BillingDetailsValues,
+  QuotationDetailsValues,
+  SignatoryValues,
+  TermsValues,
+} from "@/features/quotations/schemas/compose.schema";
+import type { QuotationResource } from "@/features/quotations/types/quotations.types";
+
 // Custom field in Quotation Details
 export interface CustomField {
   id: string;
@@ -43,4 +51,13 @@ export interface StandardTemplate {
   terms_and_condition: string;
   banking_details: string;
   footer: string;
+}
+
+export interface QuotationViewerState {
+  quotation: QuotationResource;
+  template: QuotationTemplate;
+  quotationDetails: QuotationDetailsValues;
+  billingDetails: BillingDetailsValues;
+  terms: TermsValues;
+  signatory: SignatoryValues;
 }

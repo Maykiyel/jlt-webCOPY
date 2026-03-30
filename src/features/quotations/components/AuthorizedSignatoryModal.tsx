@@ -17,6 +17,7 @@ interface AuthorizedSignatoryModalProps {
   onClose: () => void;
   onSave: (values: SignatoryValues) => void;
   currentUserName?: string;
+  initialValues?: SignatoryValues | null;
 }
 
 type SignatoryFormInput = z.input<typeof signatorySchema>;
@@ -26,6 +27,7 @@ export function AuthorizedSignatoryModal({
   onClose,
   onSave,
   currentUserName,
+  initialValues,
 }: AuthorizedSignatoryModalProps) {
   const { control, handleSubmit, setValue, watch, reset, formState } = useForm<
     SignatoryFormInput,
@@ -48,6 +50,20 @@ export function AuthorizedSignatoryModal({
     () => (signatureFile ? URL.createObjectURL(signatureFile) : null),
     [signatureFile],
   );
+
+  useEffect(() => {
+    if (!opened) {
+      return;
+    }
+
+    reset({
+      complementary_close: initialValues?.complementary_close ?? "",
+      is_authorized_signatory: initialValues?.is_authorized_signatory ?? false,
+      authorized_signatory_name: initialValues?.authorized_signatory_name ?? "",
+      position_title: initialValues?.position_title ?? "",
+      signature_file: initialValues?.signature_file ?? null,
+    });
+  }, [initialValues, opened, reset]);
 
   useEffect(() => {
     return () => {

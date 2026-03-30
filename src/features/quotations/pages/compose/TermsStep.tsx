@@ -1,5 +1,5 @@
 import { Box, Group, Text } from "@mantine/core";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { AppButton } from "@/components/ui/AppButton";
 import { PLACEHOLDER_STANDARD_TEMPLATES } from "@/features/quotations/data/composePlaceholders";
 import type { TermsValues } from "@/features/quotations/schemas/compose.schema";
@@ -44,6 +44,19 @@ export function TermsStep({ onNext, onChange, savedData }: TermsStepProps) {
   const [selectedTemplate, setSelectedTemplate] =
     useState<StandardTemplate | null>(null);
   const [currentValues, setCurrentValues] = useState<TermsValues | null>(null);
+
+  useEffect(() => {
+    if (!savedData?.template_id) {
+      return;
+    }
+
+    const template =
+      standardTemplates.find((item) => item.id === savedData.template_id) ??
+      null;
+    if (template) {
+      setSelectedTemplate(template);
+    }
+  }, [savedData?.template_id, standardTemplates]);
 
   function handleSelect(templateId: string) {
     const template =

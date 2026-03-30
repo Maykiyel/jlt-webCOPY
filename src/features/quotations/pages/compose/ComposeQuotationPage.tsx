@@ -5,7 +5,6 @@ import {
   Modal,
   Stack,
   Text,
-  Button,
   UnstyledButton,
 } from "@mantine/core";
 import {
@@ -15,7 +14,7 @@ import {
 import { useDisclosure } from "@mantine/hooks";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
-import { useNavigate, useParams } from "react-router";
+import { useLocation, useNavigate, useParams } from "react-router";
 import { PageCard } from "@/components/PageCard";
 import { AppButton } from "@/components/ui/AppButton";
 import { useAuthStore } from "@/stores/authStore";
@@ -33,12 +32,29 @@ import type {
   SignatoryValues,
   TermsValues,
 } from "@/features/quotations/schemas/compose.schema";
+import type { QuotationViewerState } from "@/features/quotations/types/compose.types";
 
 const QUOTATION_DETAILS_FORM_ID = "quotation-details-form";
 const BILLING_DETAILS_FORM_ID = "billing-details-form";
 
+interface ComposeLocationState {
+  editMode?: boolean;
+  quotationDetails?: QuotationDetailsValues;
+  billingDetails?: BillingDetailsValues;
+  terms?: TermsValues;
+  signatory?: SignatoryValues;
+}
+
 export function ComposeQuotationPage() {
+  const location = useLocation();
   const navigate = useNavigate();
+  const composeLocationState = location.state as ComposeLocationState | null;
+  const editMode = composeLocationState?.editMode ?? false;
+  const initialQuotationDetails =
+    composeLocationState?.quotationDetails ?? null;
+  const initialBillingDetails = composeLocationState?.billingDetails ?? null;
+  const initialTerms = composeLocationState?.terms ?? null;
+  const initialSignatory = composeLocationState?.signatory ?? null;
   const userResource = useAuthStore((state) => state.user);
   const currentUserName = userResource
     ? `${userResource.first_name} ${userResource.last_name}`
@@ -63,14 +79,21 @@ export function ComposeQuotationPage() {
   const [step, setStep] = useState(0);
   const [isStep0Valid, setIsStep0Valid] = useState(false);
   const [quotationDetailsData, setQuotationDetailsData] =
-    useState<QuotationDetailsValues | null>(null);
+    useState<QuotationDetailsValues | null>(initialQuotationDetails);
   const [billingDetailsData, setBillingDetailsData] =
-    useState<BillingDetailsValues | null>(null);
-  const [termsData, setTermsData] = useState<TermsValues | null>(null);
+    useState<BillingDetailsValues | null>(initialBillingDetails);
+  const [termsData, setTermsData] = useState<TermsValues | null>(initialTerms);
   const [signatoryData, setSignatoryData] = useState<SignatoryValues | null>(
-    null,
+    initialSignatory,
   );
-  const [previewReady, setPreviewReady] = useState(false);
+  const [previewReady, setPreviewReady] = useState(
+    Boolean(
+      initialQuotationDetails &&
+      initialBillingDetails &&
+      initialTerms &&
+      initialSignatory,
+    ),
+  );
   const [signatoryOpened, { open: openSignatory, close: closeSignatory }] =
     useDisclosure(false);
   const [
@@ -127,7 +150,33 @@ export function ComposeQuotationPage() {
 
   function handleSendSuccess() {
     closeSendSuccess();
-    navigate("/quotations/responded");
+    if (
+      !quotation ||
+      !quotationTemplate ||
+      !clientId ||
+      !quotationId ||
+      !quotationDetailsData ||
+      !billingDetailsData ||
+      !termsData ||
+      !signatoryData
+    ) {
+      navigate("/quotations/responded");
+      return;
+    }
+
+    const viewerState: QuotationViewerState = {
+      quotation,
+      template: quotationTemplate,
+      quotationDetails: quotationDetailsData,
+      billingDetails: billingDetailsData,
+      terms: termsData,
+      signatory: signatoryData,
+      // TODO: attach generated PDF blob here when react-pdf/renderer is implemented.
+    };
+
+    navigate(`/quotations/${tab}/client/${clientId}/${quotationId}/view`, {
+      state: viewerState,
+    });
   }
 
   return (
@@ -135,9 +184,15 @@ export function ComposeQuotationPage() {
       title={quotationTemplate.name}
       fullHeight
       action={
-        <Button onClick={handleCancel} variant="subtle" color="red">
-          Cancel
-        </Button>
+        editMode ? (
+          <AppButton
+            variant="secondary"
+            onClick={handleCancel}
+            style={{ color: "var(--mantine-color-red-6)" }}
+          >
+            CANCEL
+          </AppButton>
+        ) : undefined
       }
     >
       <Box
@@ -230,6 +285,7 @@ export function ComposeQuotationPage() {
         onClose={closeSignatory}
         onSave={handleSignatorySave}
         currentUserName={currentUserName}
+        initialValues={signatoryData}
       />
 
       <Modal

@@ -28,6 +28,7 @@ interface QuotationPreviewProps {
   terms: TermsValues;
   signatory: SignatoryValues;
   dateGenerated?: string;
+  mode?: "default" | "viewer";
 }
 
 function formatDate(date: string): string {
@@ -54,6 +55,7 @@ export function QuotationPreview({
   terms,
   signatory,
   dateGenerated,
+  mode = "default",
 }: QuotationPreviewProps) {
   const signaturePreviewUrl = useMemo(
     () =>
@@ -81,8 +83,14 @@ export function QuotationPreview({
   }, 0);
 
   return (
-    <Box className={classes.wrapper}>
-      <Box className={classes.document}>
+    <Box
+      className={mode === "viewer" ? classes.wrapperViewer : classes.wrapper}
+    >
+      <Box
+        className={
+          mode === "viewer" ? classes.documentViewer : classes.document
+        }
+      >
         <Group justify="space-between" align="flex-start" mb="xl">
           <Image src={jltLogo} w="8rem" />
           <Stack gap={2} align="flex-end">
