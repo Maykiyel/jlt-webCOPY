@@ -1,0 +1,39 @@
+.root {
+  display: flex;
+  align-items: stretch;
+  gap: 0.5rem;
+  width: 100%;
+}
+
+.tab {
+  flex: 1;
+  border: 0;
+  border-radius: 0.5rem;
+  padding: 0.75rem 0.5rem;
+  color: #ffffff;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  line-height: 1.2;
+  text-align: center;
+  cursor: default;
+}
+
+.active {
+  background: var(--mantine-color-jltOrange-5);
+}
+
+.future {
+  background: var(--mantine-color-jltAccent-3);
+  opacity: 0.72;
+}
+
+.clickable {
+  cursor: pointer;
+  transition: filter 140ms ease;
+}
+
+.clickable:hover {
+  filter: brightness(0.96);
+}
