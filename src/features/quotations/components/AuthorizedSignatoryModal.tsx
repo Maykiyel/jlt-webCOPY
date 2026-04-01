@@ -5,7 +5,7 @@ import { CloudUpload } from "@nine-thirty-five/material-symbols-react/outlined";
 import { useEffect, useMemo } from "react";
 import { Controller, useForm } from "react-hook-form";
 import * as z from "zod";
-import { TextInputField } from "@/components/form";
+import { TextInputField } from "@/components/form/textFields";
 import { AppButton } from "@/components/ui/AppButton";
 import {
   signatorySchema,
