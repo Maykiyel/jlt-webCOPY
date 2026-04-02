@@ -5,8 +5,12 @@ import type {
   RegisterOptions,
 } from "react-hook-form";
 
-export interface BaseFieldProps<T extends FieldValues> {
-  control: Control<T>;
-  name: Path<T>;
-  rules?: RegisterOptions<T>;
+export interface BaseFieldProps<
+  TValues extends FieldValues,
+  TContext = unknown,
+  TTransformedValues extends FieldValues = TValues,
+> {
+  control: Control<TValues, TContext, TTransformedValues>;
+  name: Path<TValues>;
+  rules?: RegisterOptions<TValues>;
 }

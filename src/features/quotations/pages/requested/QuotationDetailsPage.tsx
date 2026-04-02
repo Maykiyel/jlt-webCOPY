@@ -16,7 +16,6 @@ export function QuotationDetailsPage() {
     "clientId",
     "quotationId",
   ] as const);
-  const hasValidRouteParams = Boolean(routeParams);
   const navigate = useNavigate();
   const quotationId = routeParams?.quotationId;
 
@@ -29,10 +28,10 @@ export function QuotationDetailsPage() {
 
       return fetchQuotation(routeParams.quotationId);
     },
-    enabled: hasValidRouteParams,
+    enabled: Boolean(routeParams),
   });
 
-  if (!hasValidRouteParams) {
+  if (!routeParams) {
     return (
       <PageCard title="Client Details">
         <Text size="0.8rem" c="dimmed">

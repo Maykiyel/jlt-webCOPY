@@ -1,16 +1,14 @@
 import * as z from "zod";
 
-const contactNumberSchema = z.preprocess(
-  (value) => {
-    if (value === null || value === undefined) return undefined;
-    if (typeof value === "string" && value.trim() === "") return undefined;
-    return value;
-  },
-  z
-    .string()
-    .regex(/^09\d{9}$/, "Must be a valid PH number (09XXXXXXXXX)")
-    .optional(),
-);
+const contactNumberSchema = z
+  .string()
+  .trim()
+  .optional()
+  .refine(
+    (value) => value === undefined || value === "" || /^09\d{9}$/.test(value),
+    "Must be a valid PH number (09XXXXXXXXX)",
+  )
+  .transform((value) => (value === "" ? undefined : value));
 
 export const profileSchema = z.object({
   first_name: z.string().min(1, "First name is required"),

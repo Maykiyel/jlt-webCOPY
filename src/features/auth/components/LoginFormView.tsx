@@ -5,14 +5,15 @@ import {
   PasswordInputField,
 } from "@/components/form/textFields";
 import { loginSchema } from "@/features/auth/schemas/loginSchema";
-import type { Control, SubmitHandler } from "react-hook-form";
+import type { FormEventHandler } from "react";
+import type { Control } from "react-hook-form";
 
 type LoginFormValues = z.infer<typeof loginSchema>;
 
 interface LoginFormViewProps {
   control: Control<LoginFormValues>;
   isLoading: boolean;
-  onSubmit: SubmitHandler<LoginFormValues>;
+  onSubmit: FormEventHandler<HTMLFormElement>;
 }
 
 export function LoginFormView({

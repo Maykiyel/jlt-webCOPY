@@ -1,6 +1,7 @@
 import * as z from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import type { FormEventHandler } from "react";
 import { loginSchema } from "../schemas/loginSchema";
 import { LoginFormView } from "./LoginFormView";
 
@@ -23,11 +24,15 @@ export default function LoginForm({
     },
   });
 
+  const handleFormSubmit: FormEventHandler<HTMLFormElement> = (event) => {
+    void handleSubmit(onSubmit)(event);
+  };
+
   return (
     <LoginFormView
       control={control}
       isLoading={isLoading}
-      onSubmit={handleSubmit(onSubmit)}
+      onSubmit={handleFormSubmit}
     />
   );
 }
