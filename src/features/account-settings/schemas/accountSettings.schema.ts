@@ -16,6 +16,7 @@ export const profileSchema = z.object({
   position: z.string().nullable().optional(),
   contact_number: contactNumberSchema,
   email: z.email("Invalid email address"),
+  company: z.string().nullable().optional(),
 });
 
 export type ProfileFormValues = z.infer<typeof profileSchema>;
