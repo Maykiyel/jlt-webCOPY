@@ -1,5 +1,6 @@
 import { createElement } from "react";
 import type { QuotationViewerState } from "@/features/quotations/types/compose.types";
+import { toClientFileUrl } from "@/utils/file-url";
 
 export function usePDFActions(
   state: QuotationViewerState | null,
@@ -32,9 +33,12 @@ export function usePDFActions(
     ]);
 
     const hasSignatureFile = Boolean(viewerState.signatory.signature_file);
+    const signatureFileUrl = viewerState.signatory.signature_file_url;
     const signatorySignatureSrc = hasSignatureFile
       ? URL.createObjectURL(viewerState.signatory.signature_file as File)
-      : (viewerState.signatory.signature_file_url ?? null);
+      : signatureFileUrl
+        ? toClientFileUrl(signatureFileUrl)
+        : null;
 
     try {
       const doc = createElement(QuotationPDF, {

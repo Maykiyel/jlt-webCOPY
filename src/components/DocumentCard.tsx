@@ -5,36 +5,7 @@ import {
   PictureAsPdf,
 } from "@nine-thirty-five/material-symbols-react/rounded";
 import { useEffect, useRef, useState } from "react";
-
-const DEV_FILE_PROXY_PREFIX = "/__files_proxy";
-
-function toClientFileUrl(rawUrl: string): string {
-  if (!import.meta.env.DEV) return rawUrl;
-
-  try {
-    const parsedUrl = new URL(rawUrl);
-    const apiBaseUrl = import.meta.env.VITE_API_BASE_URL as string | undefined;
-
-    if (apiBaseUrl) {
-      const parsedApiBase = new URL(apiBaseUrl);
-      if (parsedUrl.origin === parsedApiBase.origin) {
-        return `${DEV_FILE_PROXY_PREFIX}${parsedUrl.pathname}${parsedUrl.search}`;
-      }
-    }
-
-    if (
-      (parsedUrl.hostname === "127.0.0.1" ||
-        parsedUrl.hostname === "localhost") &&
-      parsedUrl.port === "8000"
-    ) {
-      return `${DEV_FILE_PROXY_PREFIX}${parsedUrl.pathname}${parsedUrl.search}`;
-    }
-  } catch {
-    return rawUrl;
-  }
-
-  return rawUrl;
-}
+import { toClientFileUrl } from "@/utils/file-url";
 
 // ─── PDF Thumbnail ─────────────────────────────────────────────────────────────
 

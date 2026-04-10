@@ -2,8 +2,20 @@ import { Button, Box } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { createElement, useState } from "react";
-import { useLocation, useNavigate, useParams } from "react-router";
+import {
+  createElement,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
+import {
+  useBeforeUnload,
+  useBlocker,
+  useLocation,
+  useNavigate,
+  useParams,
+} from "react-router";
 import jltLogoUrl from "@/assets/logos/word-dark.png";
 import { PageCard } from "@/components/PageCard";
 import { useAuthStore } from "@/stores/authStore";
@@ -21,10 +33,12 @@ import { quotationQueryKeys } from "@/features/quotations/api/quotationQueryKeys
 import { buildIssuedQuotationFormData } from "@/features/quotations/pages/compose/utils/issuedQuotationPayload";
 import {
   createIssuedQuotation,
+  fetchIssuedQuotation,
   fetchQuotation,
   updateIssuedQuotation,
 } from "@/features/quotations/api/quotations.api";
 import { quotationRoutes } from "@/features/quotations/utils/quotationRoutes";
+import { buildViewerStateFromIssuedQuotation } from "@/features/quotations/utils/issuedQuotationViewerState";
 import type {
   BillingDetailsValues,
   QuotationDetailsValues,
@@ -34,8 +48,6 @@ import type {
 import type {
   ClientInformationValue,
   QuotationTemplate,
-  QuotationViewerRouteState,
-  QuotationViewerState,
   ViewerSignatoryValues,
 } from "@/features/quotations/types/compose.types";
 import type { QuotationResource } from "@/features/quotations/types/quotations.types";
@@ -50,6 +62,53 @@ interface ComposeLocationState {
   billingDetails?: BillingDetailsValues;
   terms?: TermsValues;
   signatory?: ViewerSignatoryValues;
+}
+
+interface ComposeSnapshot {
+  quotationDetails: QuotationDetailsValues | null;
+  billingDetails: BillingDetailsValues | null;
+  terms: TermsValues | null;
+  signatory: ViewerSignatoryValues | null;
+}
+
+function normalizeSignatoryForCompare(
+  signatory: ViewerSignatoryValues | null,
+): Record<string, unknown> | null {
+  if (!signatory) {
+    return null;
+  }
+
+  return {
+    complementary_close: signatory.complementary_close,
+    is_authorized_signatory: signatory.is_authorized_signatory,
+    authorized_signatory_name: signatory.authorized_signatory_name,
+    position_title: signatory.position_title,
+    signature_file_url: signatory.signature_file_url ?? null,
+    signature_file: signatory.signature_file
+      ? {
+          name: signatory.signature_file.name,
+          size: signatory.signature_file.size,
+          type: signatory.signature_file.type,
+          lastModified: signatory.signature_file.lastModified,
+        }
+      : null,
+  };
+}
+
+function normalizeSnapshot(snapshot: ComposeSnapshot) {
+  return {
+    quotationDetails: snapshot.quotationDetails,
+    billingDetails: snapshot.billingDetails,
+    terms: snapshot.terms,
+    signatory: normalizeSignatoryForCompare(snapshot.signatory),
+  };
+}
+
+function areSnapshotsEqual(a: ComposeSnapshot, b: ComposeSnapshot): boolean {
+  return (
+    JSON.stringify(normalizeSnapshot(a)) ===
+    JSON.stringify(normalizeSnapshot(b))
+  );
 }
 
 function toErrorMessage(error: unknown): string {
@@ -133,7 +192,6 @@ export function ComposeQuotationPage() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const composeLocationState = location.state as ComposeLocationState | null;
-  const editMode = composeLocationState?.editMode ?? false;
   const initialQuotationDetails =
     composeLocationState?.quotationDetails ?? null;
   const initialBillingDetails = composeLocationState?.billingDetails ?? null;
@@ -146,6 +204,13 @@ export function ComposeQuotationPage() {
     ? `${userResource.first_name} ${userResource.last_name}`
     : undefined;
   const { template: templateId, quotationId, tab, clientId } = useParams();
+  const isEditTab = tab === "responded" || tab === "accepted";
+  const hasLocationPrefill = Boolean(
+    initialQuotationDetails &&
+    initialBillingDetails &&
+    initialTerms &&
+    initialSignatory,
+  );
 
   const { data: quotation } = useQuery({
     queryKey: ["quotation", quotationId],
@@ -176,13 +241,9 @@ export function ComposeQuotationPage() {
   const [issuedQuotationId, setIssuedQuotationId] = useState<string | null>(
     null,
   );
-  const [previewReady, setPreviewReady] = useState(
-    Boolean(
-      initialQuotationDetails &&
-      initialBillingDetails &&
-      initialTerms &&
-      initialSignatory,
-    ),
+  const [previewReady, setPreviewReady] = useState(false);
+  const [savedSnapshot, setSavedSnapshot] = useState<ComposeSnapshot | null>(
+    null,
   );
   const [signatoryOpened, { open: openSignatory, close: closeSignatory }] =
     useDisclosure(false);
@@ -194,15 +255,130 @@ export function ComposeQuotationPage() {
     sendSuccessOpened,
     { open: openSendSuccess, close: closeSendSuccess },
   ] = useDisclosure(false);
-  const canOpenSignatoryModal = termsData !== null || signatoryData !== null;
-  const canRenderTermsStep =
-    quotationDetailsData !== null && billingDetailsData !== null;
   const fallbackIssuedQuotationId =
     quotation?.issued_quotation_id == null
       ? null
       : String(quotation.issued_quotation_id);
   const issuedQuotationIdForEdit =
     initialIssuedQuotationId ?? fallbackIssuedQuotationId;
+  const editMode =
+    composeLocationState?.editMode ??
+    Boolean(isEditTab && issuedQuotationIdForEdit);
+  const shouldHydrateEditState =
+    !hasLocationPrefill &&
+    editMode &&
+    Boolean(quotationId && issuedQuotationIdForEdit);
+
+  const {
+    data: issuedQuotationForEdit,
+    isLoading: isIssuedQuotationForEditLoading,
+    isError: isIssuedQuotationForEditError,
+  } = useQuery({
+    queryKey: quotationQueryKeys.issuedQuotation(
+      quotationId,
+      issuedQuotationIdForEdit ?? undefined,
+    ),
+    queryFn: () => {
+      if (!quotationId || !issuedQuotationIdForEdit) {
+        throw new Error("Missing issued quotation route context.");
+      }
+
+      return fetchIssuedQuotation(quotationId, issuedQuotationIdForEdit);
+    },
+    enabled: shouldHydrateEditState,
+  });
+
+  const hydratedViewerState = useMemo(() => {
+    if (
+      !shouldHydrateEditState ||
+      !quotation ||
+      !quotationTemplate ||
+      !issuedQuotationForEdit
+    ) {
+      return null;
+    }
+
+    if (String(issuedQuotationForEdit.template_id) !== quotationTemplate.id) {
+      return null;
+    }
+
+    return buildViewerStateFromIssuedQuotation({
+      quotation,
+      template: quotationTemplate,
+      issuedQuotation: issuedQuotationForEdit,
+    });
+  }, [
+    shouldHydrateEditState,
+    quotation,
+    quotationTemplate,
+    issuedQuotationForEdit,
+  ]);
+
+  const effectiveQuotationDetailsData =
+    quotationDetailsData ?? hydratedViewerState?.quotationDetails ?? null;
+  const effectiveBillingDetailsData =
+    billingDetailsData ?? hydratedViewerState?.billingDetails ?? null;
+  const effectiveTermsData = termsData ?? hydratedViewerState?.terms ?? null;
+  const effectiveSignatoryData =
+    signatoryData ?? hydratedViewerState?.signatory ?? null;
+  const canOpenSignatoryModal =
+    effectiveTermsData !== null || effectiveSignatoryData !== null;
+  const canRenderTermsStep =
+    effectiveQuotationDetailsData !== null &&
+    effectiveBillingDetailsData !== null;
+
+  const currentSnapshot = useMemo<ComposeSnapshot>(
+    () => ({
+      quotationDetails: effectiveQuotationDetailsData,
+      billingDetails: effectiveBillingDetailsData,
+      terms: effectiveTermsData,
+      signatory: effectiveSignatoryData,
+    }),
+    [
+      effectiveQuotationDetailsData,
+      effectiveBillingDetailsData,
+      effectiveTermsData,
+      effectiveSignatoryData,
+    ],
+  );
+  const baselineSnapshot = useMemo<ComposeSnapshot>(() => {
+    if (savedSnapshot) {
+      return savedSnapshot;
+    }
+
+    if (hasLocationPrefill) {
+      return {
+        quotationDetails: initialQuotationDetails,
+        billingDetails: initialBillingDetails,
+        terms: initialTerms,
+        signatory: initialSignatory,
+      };
+    }
+
+    if (hydratedViewerState) {
+      return {
+        quotationDetails: hydratedViewerState.quotationDetails,
+        billingDetails: hydratedViewerState.billingDetails,
+        terms: hydratedViewerState.terms,
+        signatory: hydratedViewerState.signatory,
+      };
+    }
+
+    return {
+      quotationDetails: null,
+      billingDetails: null,
+      terms: null,
+      signatory: null,
+    };
+  }, [
+    savedSnapshot,
+    hasLocationPrefill,
+    initialQuotationDetails,
+    initialBillingDetails,
+    initialTerms,
+    initialSignatory,
+    hydratedViewerState,
+  ]);
 
   const sendMutation = useMutation({
     mutationFn: async () => {
@@ -210,22 +386,23 @@ export function ComposeQuotationPage() {
         throw new Error("Missing quotation context.");
       }
       if (
-        !quotationDetailsData ||
-        !billingDetailsData ||
-        !termsData ||
-        !signatoryData
+        !effectiveQuotationDetailsData ||
+        !effectiveBillingDetailsData ||
+        !effectiveTermsData ||
+        !effectiveSignatoryData
       ) {
         throw new Error("Complete all compose steps before sending.");
       }
       if (
-        !quotationDetailsData.subject?.trim() ||
-        !quotationDetailsData.message?.trim()
+        !effectiveQuotationDetailsData.subject?.trim() ||
+        !effectiveQuotationDetailsData.message?.trim()
       ) {
         throw new Error("Subject and message are required before sending.");
       }
 
       const hasSignature = Boolean(
-        signatoryData.signature_file || signatoryData.signature_file_url,
+        effectiveSignatoryData.signature_file ||
+        effectiveSignatoryData.signature_file_url,
       );
 
       if (!hasSignature) {
@@ -238,18 +415,18 @@ export function ComposeQuotationPage() {
         quotation,
         template: quotationTemplate,
         clientInformationFields,
-        quotationDetails: quotationDetailsData,
-        billingDetails: billingDetailsData,
-        terms: termsData,
-        signatory: signatoryData,
+        quotationDetails: effectiveQuotationDetailsData,
+        billingDetails: effectiveBillingDetailsData,
+        terms: effectiveTermsData,
+        signatory: effectiveSignatoryData,
       });
 
       const payload = buildIssuedQuotationFormData({
         template: quotationTemplate,
-        quotationDetails: quotationDetailsData,
-        billingDetails: billingDetailsData,
-        terms: termsData,
-        signatory: signatoryData,
+        quotationDetails: effectiveQuotationDetailsData,
+        billingDetails: effectiveBillingDetailsData,
+        terms: effectiveTermsData,
+        signatory: effectiveSignatoryData,
         issuedQuotationFile,
       });
 
@@ -272,6 +449,20 @@ export function ComposeQuotationPage() {
       closeSendConfirm();
       openSendSuccess();
 
+      if (
+        effectiveQuotationDetailsData &&
+        effectiveBillingDetailsData &&
+        effectiveTermsData &&
+        effectiveSignatoryData
+      ) {
+        setSavedSnapshot({
+          quotationDetails: effectiveQuotationDetailsData,
+          billingDetails: effectiveBillingDetailsData,
+          terms: effectiveTermsData,
+          signatory: effectiveSignatoryData,
+        });
+      }
+
       await Promise.all([
         queryClient.invalidateQueries({
           queryKey: quotationQueryKeys.quotationDetails(quotationId),
@@ -290,6 +481,45 @@ export function ComposeQuotationPage() {
     },
   });
 
+  const hasUnsavedChanges = useMemo(
+    () => !areSnapshotsEqual(currentSnapshot, baselineSnapshot),
+    [currentSnapshot, baselineSnapshot],
+  );
+  const shouldWarnOnExit =
+    hasUnsavedChanges && !sendMutation.isPending && !sendSuccessOpened;
+  const blocker = useBlocker(shouldWarnOnExit);
+
+  useBeforeUnload(
+    useCallback(
+      (event) => {
+        if (!shouldWarnOnExit) {
+          return;
+        }
+
+        event.preventDefault();
+        event.returnValue = "";
+      },
+      [shouldWarnOnExit],
+    ),
+  );
+
+  useEffect(() => {
+    if (blocker.state !== "blocked") {
+      return;
+    }
+
+    const shouldProceed = window.confirm(
+      "You have unsaved changes. Leave this page?",
+    );
+
+    if (shouldProceed) {
+      blocker.proceed();
+      return;
+    }
+
+    blocker.reset();
+  }, [blocker]);
+
   if (isTemplateLoading) {
     return (
       <PageCard title="Compose Quotation" fullHeight>
@@ -306,42 +536,85 @@ export function ComposeQuotationPage() {
     );
   }
 
+  if (shouldHydrateEditState && isIssuedQuotationForEditLoading) {
+    return (
+      <PageCard title="Compose Quotation" fullHeight>
+        <ComposeStepLoader label="Loading issued quotation..." />
+      </PageCard>
+    );
+  }
+
+  if (
+    shouldHydrateEditState &&
+    (isIssuedQuotationForEditError || !hydratedViewerState)
+  ) {
+    return (
+      <PageCard title="Compose Quotation" fullHeight>
+        <Box p="md">Unable to load issued quotation for editing.</Box>
+      </PageCard>
+    );
+  }
+
   function handleStepClick(index: number) {
     if (index < step) setStep(index);
   }
 
   function handleStep0Submit(values: QuotationDetailsValues) {
     setQuotationDetailsData(values);
+    setPreviewReady(false);
     setStep(1);
+  }
+
+  function handleStep0Change(values: QuotationDetailsValues) {
+    setQuotationDetailsData(values);
+    setPreviewReady(false);
   }
 
   function handleStep1Submit(values: BillingDetailsValues) {
     setBillingDetailsData(values);
+    setPreviewReady(false);
     setStep(2);
+  }
+
+  function handleStep1Change(values: BillingDetailsValues) {
+    setBillingDetailsData(values);
+    setPreviewReady(false);
   }
 
   function handleTermsChange(values: TermsValues) {
     setTermsData(values);
+    setPreviewReady(false);
   }
 
-  function handleTermsNext(values: TermsValues) {
-    setTermsData(values);
+  function handleStep2Next() {
+    if (!effectiveTermsData) {
+      return;
+    }
+
+    setTermsData(effectiveTermsData);
+    setPreviewReady(false);
     openSignatory();
   }
 
-  function handleSignatorySave(values: SignatoryValues) {
+  function handleSignatorySave(values: ViewerSignatoryValues) {
     setSignatoryData(values);
-    closeSignatory();
     setPreviewReady(true);
+    closeSignatory();
   }
 
   function handleCancel() {
-    if (!tab || !clientId || !quotationId) {
+    if (!tab || !quotationId) {
       navigate(-1);
       return;
     }
 
-    navigate(`/quotations/${tab}/client/${clientId}/${quotationId}`);
+    navigate(
+      quotationRoutes.details({
+        tab,
+        clientId: clientId ?? undefined,
+        quotationId,
+      }),
+    );
   }
 
   async function handleSend() {
@@ -359,38 +632,17 @@ export function ComposeQuotationPage() {
       return;
     }
 
+    const postSendTab = tab === "requested" ? "responded" : tab;
+    const postSendClientId = postSendTab === "requested" ? clientId : undefined;
+
     const viewerPath = quotationRoutes.viewer({
-      tab,
-      clientId,
+      tab: postSendTab,
+      clientId: postSendClientId,
       quotationId,
       issuedQuotationId: issuedQuotationId ?? undefined,
     });
 
-    const viewerNavigationState:
-      | (QuotationViewerRouteState & Partial<QuotationViewerState>)
-      | null =
-      quotation &&
-      quotationDetailsData &&
-      billingDetailsData &&
-      termsData &&
-      signatoryData
-        ? {
-            issuedQuotationId: issuedQuotationId ?? undefined,
-            quotation,
-            template: quotationTemplate,
-            clientInformationFields,
-            quotationDetails: quotationDetailsData,
-            billingDetails: billingDetailsData,
-            terms: termsData,
-            signatory: signatoryData,
-          }
-        : issuedQuotationId
-          ? { issuedQuotationId }
-          : null;
-
-    navigate(viewerPath, {
-      state: viewerNavigationState ?? undefined,
-    });
+    navigate(viewerPath);
   }
 
   return (
@@ -415,42 +667,57 @@ export function ComposeQuotationPage() {
       }
     >
       <Box
-        style={{ minHeight: "100%", display: "flex", flexDirection: "column" }}
+        style={{
+          height: "100%",
+          minHeight: 0,
+          display: "flex",
+          flexDirection: "column",
+          overflow: "hidden",
+        }}
       >
         <StepperBar step={step} onStepClick={handleStepClick} />
 
         <Box
           px="xl"
           py="lg"
-          style={{ flex: 1, display: "flex", flexDirection: "column" }}
+          style={{
+            flex: 1,
+            minHeight: 0,
+            display: "flex",
+            flexDirection: "column",
+            overflow: "hidden",
+          }}
         >
           <ComposeStepContent
             step={step}
             quotationTemplate={quotationTemplate}
             quotation={quotation}
             clientInformationFields={clientInformationFields}
-            quotationDetailsData={quotationDetailsData}
-            billingDetailsData={billingDetailsData}
-            termsData={termsData}
-            signatoryData={signatoryData}
+            quotationDetailsData={effectiveQuotationDetailsData}
+            billingDetailsData={effectiveBillingDetailsData}
+            termsData={effectiveTermsData}
+            signatoryData={effectiveSignatoryData}
             previewReady={previewReady}
             canRenderTermsStep={canRenderTermsStep}
             quotationDetailsFormId={QUOTATION_DETAILS_FORM_ID}
             billingDetailsFormId={BILLING_DETAILS_FORM_ID}
             onStep0Submit={handleStep0Submit}
             onStep1Submit={handleStep1Submit}
+            onStep0Change={handleStep0Change}
+            onStep1Change={handleStep1Change}
             onStep0ValidityChange={setIsStep0Valid}
             onTermsChange={handleTermsChange}
-            onTermsNext={handleTermsNext}
           />
 
           <ComposeStepActions
             step={step}
             isStep0Valid={isStep0Valid}
+            canProceedStep2={Boolean(effectiveTermsData)}
             previewReady={previewReady}
             isSending={sendMutation.isPending}
             quotationDetailsFormId={QUOTATION_DETAILS_FORM_ID}
             billingDetailsFormId={BILLING_DETAILS_FORM_ID}
+            onStep2Next={handleStep2Next}
             onOpenSendConfirm={openSendConfirm}
           />
         </Box>
@@ -461,7 +728,7 @@ export function ComposeQuotationPage() {
         onClose={closeSignatory}
         onSave={handleSignatorySave}
         currentUserName={currentUserName}
-        initialValues={signatoryData}
+        initialValues={effectiveSignatoryData}
       />
 
       <ComposeSendModals

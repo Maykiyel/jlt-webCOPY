@@ -1,7 +1,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Stack } from "@mantine/core";
 import { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { TextInputField, TextareaField } from "@/components/form/textFields";
 import { MessageTemplateSelect } from "@/features/quotations/pages/compose/components/MessageTemplateSelect";
 import { QuotationCustomFieldsGrid } from "@/features/quotations/pages/compose/components/QuotationCustomFieldsGrid";
@@ -17,6 +17,7 @@ interface QuotationDetailsFormProps {
   template: QuotationTemplate;
   defaultValues?: Partial<QuotationDetailsValues>;
   onSubmit: (values: QuotationDetailsValues) => void;
+  onChange?: (values: QuotationDetailsValues) => void;
   onValidityChange?: (isValid: boolean) => void;
 }
 
@@ -25,6 +26,7 @@ export function QuotationDetailsForm({
   template,
   defaultValues,
   onSubmit,
+  onChange,
   onValidityChange,
 }: QuotationDetailsFormProps) {
   const { data: messageTemplates = [] } = useComposeMessageTemplates();
@@ -38,10 +40,19 @@ export function QuotationDetailsForm({
       mode: "onChange",
       defaultValues: defaultValues ?? {},
     });
+  const values = useWatch({ control });
 
   useEffect(() => {
     onValidityChange?.(formState.isValid);
   }, [formState.isValid, onValidityChange]);
+
+  useEffect(() => {
+    if (!values || !formState.isDirty) {
+      return;
+    }
+
+    onChange?.(values as QuotationDetailsValues);
+  }, [formState.isDirty, onChange, values]);
 
   return (
     <form id={id} onSubmit={handleSubmit(onSubmit)} noValidate>

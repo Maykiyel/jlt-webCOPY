@@ -23,13 +23,8 @@ import type {
   ViewerSignatoryValues,
 } from "@/features/quotations/types/compose.types";
 import type { QuotationResource } from "@/features/quotations/types/quotations.types";
-import {
-  getBillingGrandTotal,
-  getBillingSectionsWithCharges,
-  getRowsTotal,
-} from "@/features/quotations/utils/billing";
 import { formatQuotationAmount } from "@/features/quotations/utils/billingPresentation";
-import { resolveClientInformationFields } from "@/features/quotations/utils/clientInformationFields";
+import { buildQuotationDocumentViewModel } from "@/features/quotations/utils/quotationDocumentViewModel";
 import classes from "./QuotationPreview.module.css";
 
 interface QuotationPreviewProps {
@@ -67,14 +62,36 @@ export function QuotationPreview({
   dateGenerated,
   mode = "default",
 }: QuotationPreviewProps) {
-  const hasSignatureFile = Boolean(signatory.signature_file);
+  const documentViewModel = useMemo(
+    () =>
+      buildQuotationDocumentViewModel({
+        quotation,
+        template,
+        clientInformationFields,
+        billingDetails,
+        terms,
+        signatory,
+      }),
+    [
+      quotation,
+      template,
+      clientInformationFields,
+      billingDetails,
+      terms,
+      signatory,
+    ],
+  );
+  const hasSignatureFile = Boolean(documentViewModel.signatory.signatureFile);
   const signaturePreviewUrl = useMemo(() => {
-    if (signatory.signature_file) {
-      return URL.createObjectURL(signatory.signature_file);
+    if (documentViewModel.signatory.signatureFile) {
+      return URL.createObjectURL(documentViewModel.signatory.signatureFile);
     }
 
-    return signatory.signature_file_url ?? null;
-  }, [signatory.signature_file, signatory.signature_file_url]);
+    return documentViewModel.signatory.signatureFileUrl;
+  }, [
+    documentViewModel.signatory.signatureFile,
+    documentViewModel.signatory.signatureFileUrl,
+  ]);
 
   useEffect(() => {
     return () => {
@@ -87,26 +104,6 @@ export function QuotationPreview({
   const generatedDateLabel = useMemo(
     () => formatDate(dateGenerated ?? new Date().toISOString()),
     [dateGenerated],
-  );
-
-  const billingSectionsToRender = useMemo(
-    () => getBillingSectionsWithCharges(template, billingDetails),
-    [billingDetails, template],
-  );
-
-  const grandTotal = useMemo(
-    () => getBillingGrandTotal(billingSectionsToRender),
-    [billingSectionsToRender],
-  );
-
-  const resolvedClientInformationFields = useMemo(
-    () =>
-      resolveClientInformationFields(
-        quotation,
-        template.client_information_fields,
-        clientInformationFields,
-      ),
-    [clientInformationFields, quotation, template.client_information_fields],
   );
 
   return (
@@ -183,13 +180,13 @@ export function QuotationPreview({
           {quotationDetails.message}
         </Text>
 
-        {resolvedClientInformationFields.length > 0 && (
+        {documentViewModel.resolvedClientInformationFields.length > 0 && (
           <SimpleGrid
             cols={2}
             mb={template.custom_fields.length > 0 ? "xs" : "lg"}
             spacing="xs"
           >
-            {resolvedClientInformationFields.map((field) => (
+            {documentViewModel.resolvedClientInformationFields.map((field) => (
               <Group key={field.id} gap="xs" align="flex-start">
                 <Text size="xs" c="dimmed" w="9rem" style={{ flexShrink: 0 }}>
                   {field.label}:
@@ -217,16 +214,14 @@ export function QuotationPreview({
           </SimpleGrid>
         )}
 
-        {billingSectionsToRender.map(({ section, rows }) => {
-          const sectionTotal = getRowsTotal(rows);
-
+        {documentViewModel.billingSections.map((section) => {
           return (
             <QuotationPreviewBillingSection
               key={section.id}
               sectionId={section.id}
               sectionTitle={section.title}
-              rows={rows}
-              sectionTotal={sectionTotal}
+              rows={section.rows}
+              sectionTotal={section.total}
               formatAmount={formatAmount}
             />
           );
@@ -237,21 +232,26 @@ export function QuotationPreview({
             Estimated Total Landed Cost
           </Text>
           <Text size="xs" fw={700}>
-            {formatAmount(grandTotal)}
+            {formatAmount(documentViewModel.grandTotal)}
           </Text>
         </Group>
 
-        <QuotationPreviewTermsBlocks terms={terms} />
+        <QuotationPreviewTermsBlocks blocks={documentViewModel.termsBlocks} />
 
         <QuotationPreviewSignatory
-          signatory={signatory}
-          clientName={quotation.client?.full_name}
+          complementaryClose={documentViewModel.signatory.complementaryClose}
+          authorizedSignatoryName={
+            documentViewModel.signatory.authorizedSignatoryName
+          }
+          positionTitle={documentViewModel.signatory.positionTitle}
+          companyName={documentViewModel.signatory.companyName}
+          clientName={documentViewModel.signatory.clientName}
           signaturePreviewUrl={signaturePreviewUrl}
         />
 
-        {terms.footer && (
+        {documentViewModel.footer && (
           <Text size="xs" ta="center" c="dimmed" mt="xl">
-            {terms.footer}
+            {documentViewModel.footer}
           </Text>
         )}
       </Box>

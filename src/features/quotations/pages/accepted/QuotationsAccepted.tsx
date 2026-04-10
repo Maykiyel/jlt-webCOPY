@@ -20,6 +20,10 @@ import {
 import { quotationQueryKeys } from "@/features/quotations/api/quotationQueryKeys";
 import type { RespondedQuotationListItem } from "@/features/quotations/types/quotations.types";
 import { quotationRoutes } from "@/features/quotations/utils/quotationRoutes";
+import {
+  handlePrintProposalFile,
+  handleDownloadProposalFile,
+} from "@/features/quotations/utils/quotationFileActions";
 import { acceptedQueryKeys } from "@/features/quotations/pages/accepted/utils/acceptedQueryKeys";
 
 const COLUMNS: AppTableColumn<RespondedQuotationListItem>[] = [
@@ -92,22 +96,18 @@ export function QuotationsAccepted() {
         label: "Make Job Order",
         icon: <Article width={16} height={16} />,
         onClick: () => {
-          // TODO: connect to accepted quotation update flow.
+          // TODO: connect to accepted quotation make JO flow.
         },
       },
       {
         label: "Print",
         icon: <Print width={16} height={16} />,
-        onClick: () => {
-          // TODO: connect to accepted quotation print flow.
-        },
+        onClick: (row) => handlePrintProposalFile(row.id),
       },
       {
         label: "Download",
         icon: <Download width={16} height={16} />,
-        onClick: () => {
-          // TODO: connect to accepted quotation download flow.
-        },
+        onClick: (row) => handleDownloadProposalFile(row.id),
       },
     ],
     [],
@@ -135,11 +135,6 @@ export function QuotationsAccepted() {
               tab: "accepted",
               quotationId: row.id,
             }),
-            {
-              state: row.issued_quotation_id
-                ? { issuedQuotationId: String(row.issued_quotation_id) }
-                : undefined,
-            },
           );
         }}
         actions={actions}

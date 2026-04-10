@@ -1,5 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Group, Stack, Text } from "@mantine/core";
+import { useEffect } from "react";
 import { useForm, useWatch } from "react-hook-form";
 import * as z from "zod";
 import {
@@ -19,6 +20,7 @@ interface BillingDetailsFormProps {
   template: QuotationTemplate;
   defaultValues?: Partial<BillingDetailsValues>;
   onSubmit: (values: BillingDetailsValues) => void;
+  onChange?: (values: BillingDetailsValues) => void;
 }
 
 type BillingDetailsFormInput = z.input<typeof billingDetailsSchema>;
@@ -32,6 +34,7 @@ export function BillingDetailsForm({
   template,
   defaultValues,
   onSubmit,
+  onChange,
 }: BillingDetailsFormProps) {
   const { control, handleSubmit, formState } = useForm<
     BillingDetailsFormInput,
@@ -48,9 +51,18 @@ export function BillingDetailsForm({
 
   const sections = (useWatch({ control, name: "sections" }) ??
     {}) as BillingDetailsValues["sections"];
+  const formValues = useWatch({ control });
   const grandTotal = getBillingGrandTotal(
     getBillingSectionsWithCharges(template, { sections }),
   );
+
+  useEffect(() => {
+    if (!formValues || !formState.isDirty) {
+      return;
+    }
+
+    onChange?.(formValues as BillingDetailsValues);
+  }, [formState.isDirty, formValues, onChange]);
 
   return (
     <form id={id} onSubmit={handleSubmit(onSubmit)} noValidate>

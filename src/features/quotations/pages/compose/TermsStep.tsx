@@ -1,6 +1,5 @@
-import { Box, Group } from "@mantine/core";
+import { Box } from "@mantine/core";
 import { useState } from "react";
-import { AppButton } from "@/components/ui/AppButton";
 import {
   useComposeStandardTemplate,
   useComposeStandardTemplates,
@@ -8,16 +7,14 @@ import {
 import { ComposeStepLoader } from "@/features/quotations/pages/compose/components/ComposeStepLoader";
 import { TermsTemplateSelector } from "@/features/quotations/pages/compose/components/TermsTemplateSelector";
 import type { TermsValues } from "@/features/quotations/schemas/compose.schema";
-import classes from "@/features/quotations/pages/compose/TermsStep.module.css";
 import { TermsViewer } from "@/features/quotations/pages/compose/TermsViewer";
 
 interface TermsStepProps {
-  onNext: (values: TermsValues) => void;
   onChange: (values: TermsValues) => void;
   savedData?: TermsValues | null;
 }
 
-export function TermsStep({ onNext, onChange, savedData }: TermsStepProps) {
+export function TermsStep({ onChange, savedData }: TermsStepProps) {
   const { data: standardTemplates = [], isLoading: isTemplatesLoading } =
     useComposeStandardTemplates();
   const [selectedTemplateId, setSelectedTemplateId] = useState<string | null>(
@@ -25,15 +22,9 @@ export function TermsStep({ onNext, onChange, savedData }: TermsStepProps) {
   );
   const { data: selectedTemplate, isLoading: isTemplateLoading } =
     useComposeStandardTemplate(selectedTemplateId ?? undefined);
-  const [currentValues, setCurrentValues] = useState<TermsValues | null>(null);
 
   function handleSelect(templateId: string) {
     setSelectedTemplateId(templateId);
-  }
-
-  function handleValuesChange(values: TermsValues) {
-    setCurrentValues(values);
-    onChange(values);
   }
 
   if (!selectedTemplateId) {
@@ -61,25 +52,12 @@ export function TermsStep({ onNext, onChange, savedData }: TermsStepProps) {
   }
 
   return (
-    <Box
-      style={{ display: "flex", flexDirection: "column", minHeight: "100%" }}
-    >
+    <Box>
       <TermsViewer
         template={selectedTemplate}
         initialValues={savedData}
-        onChange={handleValuesChange}
+        onChange={onChange}
       />
-
-      <Group className={classes.actions}>
-        <AppButton
-          variant="primary"
-          onClick={() => currentValues && onNext(currentValues)}
-          w="10rem"
-          disabled={!currentValues}
-        >
-          Next
-        </AppButton>
-      </Group>
     </Box>
   );
 }

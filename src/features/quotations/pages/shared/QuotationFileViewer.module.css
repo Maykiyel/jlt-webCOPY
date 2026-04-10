@@ -1,27 +1,39 @@
+.root {
+  height: calc(
+    100vh - var(--app-shell-header-height) - var(--mantine-spacing-md) * 2
+  );
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
 .topBar {
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 0.625rem 1.5rem;
-  background: var(--mantine-color-body);
   border-bottom: 0.03125rem solid var(--mantine-color-gray-3);
   position: sticky;
   top: 0;
   z-index: 10;
+  flex-shrink: 0;
 }
 
 .scrollArea {
-  background: #e8e8e8;
-  min-height: calc(100vh - var(--app-shell-header-height) - 3rem);
-  display: flex;
-  justify-content: center;
+  flex: 1;
+  min-height: 0;
   padding: 1.5rem 1rem 2rem;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.scaleViewport {
+  width: 100%;
 }
 
 .a4 {
-  background: #fff;
-  width: min(21cm, 100%);
-  min-height: 29.7cm;
+  max-width: none;
   padding: 0;
   box-shadow: 0 0.125rem 0.75rem rgb(0 0 0 / 12%);
 }
@@ -58,8 +70,14 @@
     display: none;
   }
 
+  .root {
+    height: auto;
+    min-height: auto;
+    display: block;
+    overflow: visible;
+  }
+
   .scrollArea {
-    background: #fff;
     min-height: auto;
     display: block;
     padding: 0;

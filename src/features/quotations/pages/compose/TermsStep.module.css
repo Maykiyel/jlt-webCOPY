@@ -52,9 +52,3 @@
   color: var(--mantine-color-dark-8);
   padding-right: 1.5rem;
 }
-
-.actions {
-  display: flex;
-  justify-content: flex-end;
-  margin-top: 1rem;
-}

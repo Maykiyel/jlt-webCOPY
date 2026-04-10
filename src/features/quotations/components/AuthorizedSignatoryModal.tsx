@@ -11,13 +11,14 @@ import {
   signatorySchema,
   type SignatoryValues,
 } from "@/features/quotations/schemas/compose.schema";
+import type { ViewerSignatoryValues } from "@/features/quotations/types/compose.types";
 
 interface AuthorizedSignatoryModalProps {
   opened: boolean;
   onClose: () => void;
-  onSave: (values: SignatoryValues) => void;
+  onSave: (values: ViewerSignatoryValues) => void;
   currentUserName?: string;
-  initialValues?: SignatoryValues | null;
+  initialValues?: ViewerSignatoryValues | null;
 }
 
 type SignatoryFormInput = z.input<typeof signatorySchema>;
@@ -50,6 +51,7 @@ export function AuthorizedSignatoryModal({
     () => (signatureFile ? URL.createObjectURL(signatureFile) : null),
     [signatureFile],
   );
+  const previewSrc = previewUrl ?? initialValues?.signature_file_url ?? null;
 
   useEffect(() => {
     if (!opened) {
@@ -93,6 +95,15 @@ export function AuthorizedSignatoryModal({
     });
   }
 
+  function handleSave(values: SignatoryValues) {
+    onSave({
+      ...values,
+      signature_file_url: values.signature_file
+        ? null
+        : (initialValues?.signature_file_url ?? null),
+    });
+  }
+
   return (
     <Modal
       opened={opened}
@@ -105,7 +116,7 @@ export function AuthorizedSignatoryModal({
       }}
     >
       <Divider mb="sm" />
-      <form id="signatory-form" onSubmit={handleSubmit(onSave)}>
+      <form id="signatory-form" onSubmit={handleSubmit(handleSave)}>
         <Stack gap="sm">
           <TextInputField
             control={control}
@@ -154,10 +165,10 @@ export function AuthorizedSignatoryModal({
             maxSize={2 * 1024 ** 2}
             radius="md"
           >
-            {previewUrl ? (
+            {previewSrc ? (
               <Stack align="center" gap="xs" py="sm">
                 <img
-                  src={previewUrl}
+                  src={previewSrc}
                   alt="Signature preview"
                   style={{
                     width: "8rem",
@@ -167,7 +178,7 @@ export function AuthorizedSignatoryModal({
                   }}
                 />
                 <Text size="xs" c="dimmed">
-                  {signatureFile?.name}
+                  {signatureFile?.name ?? "Current signature"}
                 </Text>
               </Stack>
             ) : (

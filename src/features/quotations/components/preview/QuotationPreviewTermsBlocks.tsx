@@ -1,45 +1,29 @@
 import { Box, Stack, Text } from "@mantine/core";
-import type { TermsValues } from "@/features/quotations/schemas/compose.schema";
+import type { QuotationDocumentTermsBlock } from "@/features/quotations/utils/quotationDocumentViewModel";
 
 interface QuotationPreviewTermsBlocksProps {
-  terms: TermsValues;
+  blocks: QuotationDocumentTermsBlock[];
 }
 
 export function QuotationPreviewTermsBlocks({
-  terms,
+  blocks,
 }: QuotationPreviewTermsBlocksProps) {
+  if (blocks.length === 0) {
+    return null;
+  }
+
   return (
     <Stack gap="md" mb="xl">
-      {terms.policies && (
-        <Box>
+      {blocks.map((block) => (
+        <Box key={block.key}>
           <Text size="xs" fw={700} tt="uppercase" mb={4}>
-            Policies
+            {block.label}
           </Text>
           <Text size="xs" style={{ whiteSpace: "pre-wrap" }}>
-            {terms.policies}
+            {block.content}
           </Text>
         </Box>
-      )}
-      {terms.terms_and_condition && (
-        <Box>
-          <Text size="xs" fw={700} tt="uppercase" mb={4}>
-            Terms and Conditions
-          </Text>
-          <Text size="xs" style={{ whiteSpace: "pre-wrap" }}>
-            {terms.terms_and_condition}
-          </Text>
-        </Box>
-      )}
-      {terms.banking_details && (
-        <Box>
-          <Text size="xs" fw={700} tt="uppercase" mb={4}>
-            Banking Details
-          </Text>
-          <Text size="xs" style={{ whiteSpace: "pre-wrap" }}>
-            {terms.banking_details}
-          </Text>
-        </Box>
-      )}
+      ))}
     </Stack>
   );
 }

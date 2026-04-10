@@ -4,26 +4,34 @@ import { AppButton } from "@/components/ui/AppButton";
 interface ComposeStepActionsProps {
   step: number;
   isStep0Valid: boolean;
+  canProceedStep2: boolean;
   previewReady: boolean;
   isSending: boolean;
   quotationDetailsFormId: string;
   billingDetailsFormId: string;
+  onStep2Next: () => void;
   onOpenSendConfirm: () => void;
 }
 
 export function ComposeStepActions({
   step,
   isStep0Valid,
+  canProceedStep2,
   previewReady,
   isSending,
   quotationDetailsFormId,
   billingDetailsFormId,
+  onStep2Next,
   onOpenSendConfirm,
 }: ComposeStepActionsProps) {
   return (
     <>
       {step < 2 && (
-        <Group justify="flex-end" mt="lg" style={{ marginTop: "auto" }}>
+        <Group
+          justify="flex-end"
+          mt="lg"
+          style={{ marginTop: "auto", flexShrink: 0 }}
+        >
           {step === 0 ? (
             <AppButton
               variant="primary"
@@ -47,8 +55,25 @@ export function ComposeStepActions({
         </Group>
       )}
 
+      {step === 2 && !previewReady && (
+        <Group
+          justify="flex-end"
+          mt="lg"
+          style={{ marginTop: "auto", flexShrink: 0 }}
+        >
+          <AppButton
+            variant="primary"
+            onClick={onStep2Next}
+            disabled={!canProceedStep2}
+            w="10rem"
+          >
+            Next
+          </AppButton>
+        </Group>
+      )}
+
       {step === 2 && previewReady && (
-        <Group justify="flex-end" mt="lg" style={{ marginTop: "auto" }}>
+        <Group justify="flex-end" mt="lg" style={{ flexShrink: 0 }}>
           <AppButton
             variant="primary"
             onClick={onOpenSendConfirm}

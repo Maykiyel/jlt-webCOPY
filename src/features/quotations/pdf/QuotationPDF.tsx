@@ -12,13 +12,8 @@ import type {
   QuotationTemplate,
 } from "@/features/quotations/types/compose.types";
 import type { QuotationResource } from "@/features/quotations/types/quotations.types";
-import {
-  getBillingGrandTotal,
-  getBillingSectionsWithCharges,
-  getRowsTotal,
-} from "@/features/quotations/utils/billing";
 import { formatQuotationAmount } from "@/features/quotations/utils/billingPresentation";
-import { resolveClientInformationFields } from "@/features/quotations/utils/clientInformationFields";
+import { buildQuotationDocumentViewModel } from "@/features/quotations/utils/quotationDocumentViewModel";
 
 interface QuotationPDFProps {
   quotation: QuotationResource;
@@ -55,16 +50,16 @@ export function QuotationPDF({
   logoSrc,
   signatorySignatureSrc,
 }: QuotationPDFProps) {
-  const billingSectionsToRender = getBillingSectionsWithCharges(
-    template,
-    billingDetails,
-  );
-  const grand = getBillingGrandTotal(billingSectionsToRender);
-  const resolvedClientInformationFields = resolveClientInformationFields(
+  const documentViewModel = buildQuotationDocumentViewModel({
     quotation,
-    template.client_information_fields,
+    template,
     clientInformationFields,
-  );
+    billingDetails,
+    terms,
+    signatory,
+  });
+  const resolvedSignatorySignatureSrc =
+    signatorySignatureSrc ?? documentViewModel.signatory.signatureFileUrl;
 
   return (
     <Document>
@@ -124,11 +119,11 @@ export function QuotationPDF({
           {quotationDetails.message}
         </Text>
 
-        {resolvedClientInformationFields.length > 0 && (
+        {documentViewModel.resolvedClientInformationFields.length > 0 && (
           <View
             style={{ flexDirection: "row", flexWrap: "wrap", marginBottom: 8 }}
           >
-            {resolvedClientInformationFields.map((field) => (
+            {documentViewModel.resolvedClientInformationFields.map((field) => (
               <View
                 key={field.id}
                 style={{ width: "50%", flexDirection: "row", marginBottom: 4 }}
@@ -162,16 +157,14 @@ export function QuotationPDF({
           </View>
         )}
 
-        {billingSectionsToRender.map(({ section, rows }) => {
-          const total = getRowsTotal(rows);
-
+        {documentViewModel.billingSections.map((section) => {
           return (
             <QuotationPDFBillingSection
               key={section.id}
               sectionId={section.id}
               sectionTitle={section.title}
-              rows={rows}
-              total={total}
+              rows={section.rows}
+              total={section.total}
               styles={styles}
               formatAmount={formatAmount}
             />
@@ -186,51 +179,44 @@ export function QuotationPDF({
           }}
         >
           <Text style={styles.bold}>Estimated Total Landed Cost</Text>
-          <Text style={styles.bold}>{formatAmount(grand)}</Text>
+          <Text style={styles.bold}>
+            {formatAmount(documentViewModel.grandTotal)}
+          </Text>
         </View>
 
-        {terms.policies ? (
-          <View style={{ marginBottom: 10 }}>
-            <Text style={styles.bold}>Policies</Text>
-            <Text>{terms.policies}</Text>
+        {documentViewModel.termsBlocks.map((block) => (
+          <View key={block.key} style={{ marginBottom: 10 }}>
+            <Text style={styles.bold}>{block.label}</Text>
+            <Text>{block.content}</Text>
           </View>
-        ) : null}
-        {terms.terms_and_condition ? (
-          <View style={{ marginBottom: 10 }}>
-            <Text style={styles.bold}>Terms and Conditions</Text>
-            <Text>{terms.terms_and_condition}</Text>
-          </View>
-        ) : null}
-        {terms.banking_details ? (
-          <View style={{ marginBottom: 10 }}>
-            <Text style={styles.bold}>Banking Details</Text>
-            <Text>{terms.banking_details}</Text>
-          </View>
-        ) : null}
+        ))}
 
         <View style={styles.signatoryBlock} wrap={false}>
           <View style={styles.signatoryCol}>
-            <Text>{signatory.complementary_close}</Text>
-            {signatorySignatureSrc ? (
-              <Image src={signatorySignatureSrc} style={styles.signature} />
+            <Text>{documentViewModel.signatory.complementaryClose}</Text>
+            {resolvedSignatorySignatureSrc ? (
+              <Image
+                src={resolvedSignatorySignatureSrc}
+                style={styles.signature}
+              />
             ) : null}
             <Text style={styles.bold}>
-              {signatory.authorized_signatory_name?.toUpperCase()}
+              {documentViewModel.signatory.authorizedSignatoryName?.toUpperCase()}
             </Text>
-            <Text>{signatory.position_title}</Text>
-            <Text>Jill L. Tolentino Customs Brokerage</Text>
+            <Text>{documentViewModel.signatory.positionTitle}</Text>
+            <Text>{documentViewModel.signatory.companyName}</Text>
           </View>
           <View style={styles.signatoryCol}>
             <Text>CONFORME:</Text>
             <Text style={[styles.bold, { marginTop: 24 }]}>
-              {quotation.client?.full_name?.toUpperCase() ?? ""}
+              {documentViewModel.signatory.clientName.toUpperCase()}
             </Text>
             <Text>Client</Text>
           </View>
         </View>
 
-        {terms.footer ? (
-          <Text style={styles.footer}>{terms.footer}</Text>
+        {documentViewModel.footer ? (
+          <Text style={styles.footer}>{documentViewModel.footer}</Text>
         ) : null}
       </Page>
     </Document>

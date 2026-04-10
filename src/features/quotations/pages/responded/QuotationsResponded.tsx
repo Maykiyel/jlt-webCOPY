@@ -21,6 +21,10 @@ import { quotationQueryKeys } from "@/features/quotations/api/quotationQueryKeys
 import type { RespondedQuotationListItem } from "@/features/quotations/types/quotations.types";
 import { respondedQueryKeys } from "@/features/quotations/pages/responded/utils/respondedQueryKeys";
 import { quotationRoutes } from "@/features/quotations/utils/quotationRoutes";
+import {
+  handlePrintProposalFile,
+  handleDownloadProposalFile,
+} from "@/features/quotations/utils/quotationFileActions";
 
 const COLUMNS: AppTableColumn<RespondedQuotationListItem>[] = [
   {
@@ -91,26 +95,31 @@ export function QuotationsResponded() {
       {
         label: "Update Quotation",
         icon: <RequestQuote width={16} height={16} />,
-        onClick: () => {
-          // TODO: connect to responded quotation update flow.
+        onClick: (row) => {
+          // Use issued_quotation_id if present, otherwise fallback to row.id
+          const issuedQuotationId = row.issued_quotation_id ?? row.id;
+          navigate(
+            quotationRoutes.compose({
+              tab: "responded",
+              clientId: undefined, // If you have clientId, pass it here
+              quotationId: row.id,
+            }),
+            { state: { editMode: true, issuedQuotationId } },
+          );
         },
       },
       {
         label: "Print",
         icon: <Print width={16} height={16} />,
-        onClick: () => {
-          // TODO: connect to responded quotation print flow.
-        },
+        onClick: (row) => handlePrintProposalFile(row.id),
       },
       {
         label: "Download",
         icon: <Download width={16} height={16} />,
-        onClick: () => {
-          // TODO: connect to responded quotation download flow.
-        },
+        onClick: (row) => handleDownloadProposalFile(row.id),
       },
     ],
-    [],
+    [navigate],
   );
 
   const prefetchQuotationDetails = (quotationId: string) => {
@@ -135,11 +144,6 @@ export function QuotationsResponded() {
               tab: "responded",
               quotationId: row.id,
             }),
-            {
-              state: row.issued_quotation_id
-                ? { issuedQuotationId: String(row.issued_quotation_id) }
-                : undefined,
-            },
           );
         }}
         actions={actions}

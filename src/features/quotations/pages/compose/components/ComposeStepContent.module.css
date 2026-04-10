@@ -1,0 +1,46 @@
+.stepScrollArea {
+  width: 100%;
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-gutter: stable both-edges;
+}
+
+.previewScrollArea {
+  width: 100%;
+  flex: 1;
+  min-height: 0;
+  background: transparent;
+  padding: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-gutter: stable both-edges;
+}
+
+.previewA4 {
+  background: transparent;
+  overflow: visible;
+  box-shadow: none;
+}
+
+@media print {
+  @page {
+    size: A4;
+    margin: 0.5in;
+  }
+
+  .previewScrollArea {
+    background: #fff;
+    display: block;
+    padding: 0;
+    overflow: visible;
+  }
+
+  .previewA4 {
+    width: 100%;
+    min-height: auto;
+    overflow: visible;
+    box-shadow: none;
+  }
+}
