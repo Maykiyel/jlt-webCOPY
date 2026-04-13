@@ -7,8 +7,10 @@ import {
   FolderManaged,
 } from "@nine-thirty-five/material-symbols-react/rounded";
 import type { NavItem } from "./AppSidebarUtils";
+import { ROLES } from "@/types/roles";
 
-export const NAV_ITEMS: NavItem[] = [
+// Default items (for all roles except IT)
+const DEFAULT_ITEMS: NavItem[] = [
   {
     id: "dashboard",
     icon: <Dashboard width="2rem" height="2rem" />,
@@ -64,8 +66,24 @@ export const NAV_ITEMS: NavItem[] = [
     icon: <ManageAccounts width="2rem" height="2rem" />,
     label: "Accounts",
     subItems: [
-      { label: "Clients", path: "/accounts/clients" },
-      { label: "Employees", path: "/accounts/employees" },
+      { label: "Clients",
+        path: "/accounts/clients", 
+        subItems: [
+          { label: "Old", path: "/accounts/clients/old" },
+          { label: "New", path: "/accounts/clients/new" },
+        ],
+      },
+      { 
+        label: "Employees", 
+        path: "/accounts/employees",
+        subItems: [
+          { label: "Operations", path: "/accounts/employees/operations" },
+          { label: "Account Specialists", path: "/accounts/employees/account-specialists" },
+          { label: "Human Resources", path: "/accounts/employees/hr" },
+          { label: "IT", path: "/accounts/employees/it" },
+          { label: "Finance", path: "/accounts/employees/finance" },
+        ],
+      },
     ],
   },
   {
@@ -75,6 +93,50 @@ export const NAV_ITEMS: NavItem[] = [
     path: "/tools",
   },
 ];
+
+// Role-aware builder
+export function getNavItems(role: string): NavItem[] {
+  if (role === ROLES.IT) {
+    // IT role: only Dashboard + Accounts
+    return [
+      {
+        id: "dashboard",
+        icon: <Dashboard width="2rem" height="2rem" />,
+        label: "Dashboard",
+        path: "/",
+      },
+      {
+        id: "accounts",
+        icon: <ManageAccounts width="2rem" height="2rem" />,
+        label: "Accounts",
+        subItems: [
+          { label: "Clients",
+            path: "/accounts/clients", 
+            subItems: [
+              { label: "Old", path: "/accounts/clients/old" },
+              { label: "New", path: "/accounts/clients/new" },
+            ],
+          },
+          { 
+            label: "Employees", 
+            path: "/accounts/employees",
+            subItems: [
+              { label: "AS", path: "/accounts/employees/account-specialists" },
+              { label: "HR", path: "/accounts/employees/human-resources" },
+              { label: "IT", path: "/accounts/employees/it" },
+              { label: "Marketing", path: "/accounts/employees/marketing" },
+              { label: "Operations", path: "/accounts/employees/operations" },
+              { label: "Finance", path: "/accounts/employees/finance" },
+            ],
+          },
+        ],
+      },
+    ];
+  }
+
+  // No roles return default menu
+  return DEFAULT_ITEMS;
+}
 
 export const BTN_HEIGHT_REM = 5;
 export const PILL_HEIGHT_REM = 3.5;

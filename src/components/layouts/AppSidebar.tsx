@@ -3,11 +3,11 @@ import { useLocation, useNavigate } from "react-router";
 import classes from "./AppSidebar.module.css";
 import {
   BTN_HEIGHT_REM,
-  NAV_ITEMS,
   PANEL_BASE_PADDING_REM,
   PANEL_INDENT_STEP_REM,
   PILL_HEIGHT_REM,
   RAIL_PADDING_TOP_REM,
+  getNavItems, // <-- import the role-aware builder
 } from "./AppSidebar.config";
 import {
   getActiveIndex,
@@ -18,13 +18,19 @@ import {
   type MenuNode,
   type NavItem,
 } from "./AppSidebarUtils";
-
-// Component
+import { useAuthStore } from "@/stores/authStore"; // <-- import auth store
 
 export function AppSidebar() {
   const location = useLocation();
   const navigate = useNavigate();
   const currentPath = location.pathname;
+
+  // Get user role from auth store
+  const userResource = useAuthStore((state) => state.user);
+  const role = userResource?.role ?? "";
+
+  // Build NAV_ITEMS dynamically based on role
+  const NAV_ITEMS = getNavItems(role);
 
   const activeIndex = getActiveIndex(NAV_ITEMS, currentPath);
   const activeItem = getActiveItem(NAV_ITEMS, currentPath);

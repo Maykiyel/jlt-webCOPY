@@ -10,6 +10,7 @@ import {
   type ShipmentClientGroup,
 } from "../../types/shipments.types";
 
+
 const COLUMNS: AppTableColumn<ShipmentListItem>[] = [
   {
     key: "reference",

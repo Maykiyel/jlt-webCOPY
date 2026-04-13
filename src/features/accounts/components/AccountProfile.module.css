@@ -1,0 +1,11 @@
+/* src/features/accounts/components/employees/accountprofile.module.css */
+
+.card {
+  width: 100%;
+  max-width: 71.0625rem; /* 1137px */
+  height: auto;          /* shrink/grow automatically */
+  position: relative;
+  overflow: hidden;
+  border-radius: 1rem;   /* optional: match Mantine radius="lg" */
+  box-shadow: var(--mantine-shadow-sm); /* optional: match shadow="sm" */
+}

@@ -7,22 +7,18 @@ import NotFound from "./routes/NotFound";
 import { Loader } from "@mantine/core";
 
 const LoginPage = lazy(() => import("./routes/auth/LoginPage"));
-const DashboardPage = lazy(
-  () => import("./routes/app/dashboard/DashboardPage"),
-);
-const AccountSettings = lazy(
-  () => import("./routes/app/account-settings/AccountSettingsPage"),
-);
+const DashboardPage = lazy(() => import("./routes/app/dashboard/DashboardPage"));
+const AccountSettings = lazy(() => import("./routes/app/account-settings/AccountSettingsPage"));
 const Quotations = lazy(() => import("./routes/app/quotations/QuotationsPage"));
-const QuotationViewerPage = lazy(
-  () => import("./routes/app/quotations/QuotationViewerPage"),
-);
+const QuotationViewerPage = lazy(() => import("./routes/app/quotations/QuotationViewerPage"));
 const Shipments = lazy(() => import("./routes/app/shipments/ShipmentsPage"));
 const ShipmentDetailsPage = lazy(() =>
   import("@/features/shipments/pages/ShipmentDetails").then((m) => ({
     default: m.ShipmentDetailsPage,
   })),
 );
+const Accounts = lazy(() => import("./routes/app/accounts/AccountsPage"));
+const AccountsPage = lazy(() => import("./routes/app/accounts/AccountsPage"));
 
 export const router = createBrowserRouter([
   // ==========================================
@@ -112,7 +108,14 @@ export const router = createBrowserRouter([
           { path: "shipments/:category", Component: Shipments },
           { path: "shipments", Component: Shipments },
 
-          { path: "*", Component: NotFound },
+          // ==========================================
+          // Accounts routes
+          // ==========================================
+          { path: "accounts/:category/:subCategory/:id", Component: AccountsPage },
+          { path: "accounts/:category/:id", Component: AccountsPage },
+          { path: "accounts/:category/:subCategory", Component: AccountsPage },
+          { path: "accounts/:category", Component: AccountsPage },
+          { path: "accounts", Component: AccountsPage },
         ],
       },
     ],
