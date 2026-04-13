@@ -71,8 +71,34 @@ export function usePDFActions(
     }, 2000);
   }
 
+
   async function handlePrint() {
-    window.print();
+    const blob = await generateBlob();
+    const pdfBlob =
+      blob.type === "application/pdf"
+        ? blob
+        : new Blob([blob], { type: "application/pdf" });
+    const url = URL.createObjectURL(pdfBlob);
+
+    // Open PDF in a new window and trigger print
+    const printWindow = window.open(url);
+    if (printWindow) {
+      // Wait for the PDF to load, then print
+      const onLoad = () => {
+        printWindow.focus();
+        printWindow.print();
+        printWindow.removeEventListener("load", onLoad);
+        setTimeout(() => {
+          URL.revokeObjectURL(url);
+          printWindow.close();
+        }, 1000);
+      };
+      printWindow.addEventListener("load", onLoad);
+    } else {
+      // Fallback: open PDF and let user print manually
+      window.open(url);
+      setTimeout(() => URL.revokeObjectURL(url), 5000);
+    }
   }
 
   return { handleDownload, handlePrint };

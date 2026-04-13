@@ -24,8 +24,8 @@ export const quotationPdfStyles = StyleSheet.create({
     textTransform: "uppercase",
   },
   divider: { borderBottom: "0.5pt solid #cccccc", marginVertical: 8 },
-  label: { color: "#555555" },
-  bold: { fontFamily: "Helvetica-Bold" },
+  label: { color: "#555555", wordBreak: "keep-all", overflowWrap: "normal" },
+  bold: { fontFamily: "Helvetica-Bold", wordBreak: "keep-all", overflowWrap: "normal" },
   sectionTitle: {
     fontFamily: "Helvetica-Bold",
     fontSize: 10,

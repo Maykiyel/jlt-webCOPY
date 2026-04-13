@@ -128,10 +128,10 @@ export function QuotationPDF({
                 key={field.id}
                 style={{ width: "50%", flexDirection: "row", marginBottom: 4 }}
               >
-                <Text style={[styles.label, { width: 100 }]}>
-                  {field.label}:
+                <Text style={styles.label}>{field.label}:</Text>
+                <Text style={[styles.bold, { paddingLeft: 4 }]}>
+                  {field.value}
                 </Text>
-                <Text style={styles.bold}>{field.value}</Text>
               </View>
             ))}
           </View>
@@ -146,10 +146,8 @@ export function QuotationPDF({
                 key={field.id}
                 style={{ width: "50%", flexDirection: "row", marginBottom: 4 }}
               >
-                <Text style={[styles.label, { width: 100 }]}>
-                  {field.label}:
-                </Text>
-                <Text style={styles.bold}>
+                <Text style={[styles.label]}>{field.label}:</Text>
+                <Text style={[styles.bold, { paddingLeft: 4 }]}>
                   {quotationDetails.custom_fields?.[field.id] ?? "—"}
                 </Text>
               </View>

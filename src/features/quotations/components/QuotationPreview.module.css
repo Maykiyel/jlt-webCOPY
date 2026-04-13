@@ -1,3 +1,7 @@
+.noWordBreak {
+  word-break: keep-all;
+  overflow-wrap: normal;
+}
 .wrapper {
   width: 100%;
   overflow-y: auto;

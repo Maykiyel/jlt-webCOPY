@@ -5,13 +5,7 @@ import { AppHeader } from "@/components/layouts/AppHeader";
 
 const PANEL_WIDTH_REM = 7.9375;
 
-const SUB_ITEM_PREFIXES = [
-  "/leads",
-  "/shipments",
-  "/quotations",
-  "/accounts",
-  "/tools",
-];
+const SUB_ITEM_PREFIXES = ["/leads", "/shipments", "/quotations", "/accounts"];
 
 function useIsPanelOpen() {
   const { pathname } = useLocation();
@@ -53,7 +47,6 @@ export function AppLayout() {
           paddingLeft: panelOpen
             ? `calc(var(--app-shell-navbar-width) + ${PANEL_WIDTH_REM}rem + var(--mantine-spacing-md))`
             : undefined,
-          transition: "padding-left 240ms cubic-bezier(0.4, 0, 0.2, 1)",
         }}
       >
         <Outlet />

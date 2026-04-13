@@ -188,10 +188,21 @@ export function QuotationPreview({
           >
             {documentViewModel.resolvedClientInformationFields.map((field) => (
               <Group key={field.id} gap="xs" align="flex-start">
-                <Text size="xs" c="dimmed" w="9rem" style={{ flexShrink: 0 }}>
+                <Text
+                  size="xs"
+                  c="dimmed"
+                  tt={"capitalize"}
+                  style={{ flexShrink: 0 }}
+                  className={classes.noWordBreak}
+                >
                   {field.label}:
                 </Text>
-                <Text size="xs" fw={500}>
+                <Text
+                  size="xs"
+                  fw={500}
+                  tt={"capitalize"}
+                  className={classes.noWordBreak}
+                >
                   {field.value}
                 </Text>
               </Group>
@@ -203,10 +214,15 @@ export function QuotationPreview({
           <SimpleGrid cols={2} mb="lg" spacing="xs">
             {template.custom_fields.map((field) => (
               <Group key={field.id} gap="xs" align="flex-start">
-                <Text size="xs" c="dimmed" w="9rem" style={{ flexShrink: 0 }}>
+                <Text
+                  size="xs"
+                  c="dimmed"
+                  style={{ flexShrink: 0 }}
+                  className={classes.noWordBreak}
+                >
                   {field.label}:
                 </Text>
-                <Text size="xs" fw={500}>
+                <Text size="xs" fw={500} className={classes.noWordBreak}>
                   {quotationDetails.custom_fields?.[field.id] ?? "—"}
                 </Text>
               </Group>

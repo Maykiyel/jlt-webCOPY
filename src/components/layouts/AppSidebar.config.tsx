@@ -72,11 +72,7 @@ export const NAV_ITEMS: NavItem[] = [
     id: "tools",
     icon: <FolderManaged width="2rem" height="2rem" />,
     label: "Tools",
-    subItems: [
-      { label: "Services", path: "/tools/services" },
-      { label: "Templates", path: "/tools/templates" },
-      { label: "Messages", path: "/tools/messages" },
-    ],
+    path: "/tools",
   },
 ];
 
