@@ -118,6 +118,7 @@ export function getUserDisplayName(user: User | UserResource): string {
  * const role = getUserRole(user); // "Account Specialist"
  */
 export function getUserRole(user: User | UserResource): Role {
+  
   return user.role;
 }
 

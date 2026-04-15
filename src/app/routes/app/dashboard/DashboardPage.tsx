@@ -2,8 +2,8 @@ import { useAuthStore } from "@/stores/authStore";
 import { toUser, getUserRole } from "@/lib/mappers/user.mapper";
 import { ROLES } from "@/types/roles";
 import AccountSpecialistDashboard from "@/features/dashboard/pages/AccountSpecialistDashboard";
-import { Navigate } from "react-router";
-// import { ClientDashboard } from "@/features/dashboard/pages/ClientDashboard";
+import OperationsDashboard from "@/features/dashboard/pages/OperationsDashboard";
+import ClientDashboard from "@/features/dashboard/pages/ClientDashboard";
 // import { MarketingDashboard } from "@/features/dashboard/pages/MarketingDashboard";
 // import { HRDashboard } from "@/features/dashboard/pages/HRDashboard";
 
@@ -28,16 +28,21 @@ export default function DashboardPage() {
   const user = toUser(userResource);
   const role = getUserRole(user);
 
+  console.log("khate", role)
+
   // Route to appropriate dashboard based on role
   switch (role) {
     case ROLES.CLIENT:
-      return <Navigate to="/login" replace />;
+      return <ClientDashboard />;
 
     case ROLES.ACCOUNT_SPECIALIST:
       return <AccountSpecialistDashboard />;
 
     case ROLES.LEAD_ACCOUNT_SPECIALIST:
       return <AccountSpecialistDashboard />;
+
+    case ROLES.OPERATIONS:
+      return <OperationsDashboard />;
 
     case ROLES.MARKETING:
       return <h1>Marketing Dashboard</h1>;
