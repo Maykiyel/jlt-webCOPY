@@ -5,7 +5,7 @@ import { useNavigate, useParams } from "react-router";
 import { PageCard } from "@/components/PageCard";
 import { DocumentCard } from "@/components/DocumentCard";
 import { AppButton } from "@/components/ui/AppButton";
-import { fetchQuotationFiles } from "@/features/quotations/api/quotations.api";
+import { fetchQuotationFiles } from "@/features/quotations/api/quotationFiles.api";
 import { useQuotationRouteParams } from "@/features/quotations/hooks/useQuotationRouteParams";
 import { quotationQueryKeys } from "@/features/quotations/api/quotationQueryKeys";
 import { quotationRoutes } from "@/features/quotations/utils/quotationRoutes";
