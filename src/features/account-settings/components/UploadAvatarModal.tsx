@@ -15,7 +15,6 @@ import { Cancel } from "@nine-thirty-five/material-symbols-react/rounded/filled"
 import { accountSettingsService } from "../services/accountSettings.service";
 import { userService } from "@/services/user.service";
 import { useAuthStore } from "@/stores/authStore";
-import { AppButton } from "@/components/ui/AppButton";
 
 interface UploadAvatarModalProps {
   opened: boolean;
@@ -171,16 +170,16 @@ export function UploadAvatarModal({
           </Stack>
         )}
 
-        <AppButton
-          variant="secondary"
+        <Button
           h={"2.625rem"}
           style={{ alignSelf: "center" }}
+          color="jltAccent.6"
           disabled={files.length === 0}
           loading={uploadMutation.isPending}
           onClick={() => files[0] && uploadMutation.mutate(files[0])}
         >
           UPLOAD
-        </AppButton>
+        </Button>
       </Stack>
     </Modal>
   );
