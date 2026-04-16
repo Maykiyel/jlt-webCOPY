@@ -115,13 +115,78 @@ export function AppSidebar() {
       {/* Rail background layer */}
       <Box className={classes.railBg} />
 
-      {/* Travelling pill layer */}
+      {/* Icon rail and travelling pill wrapper */}
       <Box
-        className={classes.activePill}
-        data-visible={activeIndex >= 0 || undefined}
-        data-panel-open={panelOpen || undefined}
-        style={{ transform: `translateY(${pillTop})` }}
-      />
+        style={{
+          position: "relative",
+          overflow: "hidden",
+          width: "var(--rail-width)",
+          height: "100%",
+          zIndex: 3,
+          flexShrink: 0,
+        }}
+      >
+        {/* Travelling pill layer */}
+        <Box
+          className={classes.activePill}
+          data-visible={activeIndex >= 0 || undefined}
+          data-panel-open={panelOpen || undefined}
+          style={{ transform: `translateY(${pillTop})` }}
+        />
+
+        {/* ── Icon rail ── */}
+        <Flex
+          align="center"
+          direction="column"
+          wrap="wrap"
+          pt="1.125rem"
+          w="5.5625rem"
+          h="100%"
+          style={{ zIndex: 3, flexShrink: 0, overflow: "visible" }}
+        >
+          {/* Nav icon buttons */}
+          {navItems.map((item) => {
+            const active = isItemActive(item, currentPath);
+            return (
+              <Tooltip
+                key={item.id}
+                label={item.label}
+                position="right"
+                offset={8}
+                transitionProps={{ transition: "slide-right", duration: 200 }}
+                color="jltOrange.5"
+                zIndex={300}
+                disabled={active}
+                styles={{
+                  tooltip: {
+                    color: "var(--mantine-color-jltBlue)",
+                  },
+                }}
+              >
+                <UnstyledButton
+                  onClick={() => handleIconClick(item)}
+                  data-active={active || undefined}
+                  className={classes.iconBtn}
+                  w="100%"
+                  h={`${BTN_HEIGHT_REM}rem`}
+                  display="flex"
+                  style={{
+                    alignItems: "center",
+                    justifyContent: "center",
+                    position: "relative",
+                    zIndex: 1,
+                    overflow: "visible",
+                    color: active ? "var(--mantine-color-jltBlue-8)" : "white",
+                    transition: "color 150ms ease",
+                  }}
+                >
+                  {item.icon}
+                </UnstyledButton>
+              </Tooltip>
+            );
+          })}
+        </Flex>
+      </Box>
 
       {/* ── Sub-item panel ── */}
       <Box
@@ -136,59 +201,6 @@ export function AppSidebar() {
           </Box>
         )}
       </Box>
-
-      {/* ── Icon rail ── */}
-      <Flex
-        align="center"
-        direction="column"
-        wrap="wrap"
-        pt="1.125rem"
-        style={{ zIndex: 3, flexShrink: 0, overflow: "visible" }}
-        w="5.5625rem"
-        h="100%"
-      >
-        {/* Nav icon buttons */}
-        {navItems.map((item) => {
-          const active = isItemActive(item, currentPath);
-          return (
-            <Tooltip
-              key={item.id}
-              label={item.label}
-              position="right"
-              offset={8}
-              transitionProps={{ transition: "slide-right", duration: 200 }}
-              color="jltOrange.5"
-              zIndex={300}
-              disabled={active}
-              styles={{
-                tooltip: {
-                  color: "var(--mantine-color-jltBlue)",
-                },
-              }}
-            >
-              <UnstyledButton
-                onClick={() => handleIconClick(item)}
-                data-active={active || undefined}
-                className={classes.iconBtn}
-                w="100%"
-                h={`${BTN_HEIGHT_REM}rem`}
-                display="flex"
-                style={{
-                  alignItems: "center",
-                  justifyContent: "center",
-                  position: "relative",
-                  zIndex: 1,
-                  overflow: "visible",
-                  color: active ? "var(--mantine-color-jltBlue-8)" : "white",
-                  transition: "color 150ms ease",
-                }}
-              >
-                {item.icon}
-              </UnstyledButton>
-            </Tooltip>
-          );
-        })}
-      </Flex>
     </Box>
   );
 }

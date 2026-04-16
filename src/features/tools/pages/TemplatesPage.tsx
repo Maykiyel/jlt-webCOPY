@@ -64,8 +64,9 @@ export function TemplatesPage() {
             <Button
               leftSection={<Add />}
               onClick={openAddModal}
-              h="2.4375rem" 
-              w="8.0625rem" 
+              color="jltAccent.6"
+              h="2.4375rem"
+              w="8.0625rem"
               style={{
                 minWidth: "8.0625rem",
                 maxWidth: "8.0625rem",
@@ -77,8 +78,9 @@ export function TemplatesPage() {
 
             <ActionIcon
               onClick={openSettingsModal}
-              h="2.25rem" 
-              w="2.25rem" 
+              color="jltAccent.6"
+              h="2.25rem"
+              w="2.25rem"
               style={{
                 paddingInline: 0,
                 justifyContent: "center",
