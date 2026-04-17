@@ -31,7 +31,11 @@ export function ShipmentDetailsPage() {
     billingSummary: false,
   });
 
-  const { data: shipment, isLoading, error } = useQuery({
+  const {
+    data: shipment,
+    isLoading,
+    error,
+  } = useQuery({
     queryKey: ["shipment", shipmentId],
     queryFn: () => fetchShipment(shipmentId!),
     enabled: !!shipmentId,
@@ -42,7 +46,13 @@ export function ShipmentDetailsPage() {
   if (error) {
     return (
       <PageCard title="Shipment Details">
-        <div style={{ padding: "2rem", textAlign: "center", color: "var(--mantine-color-red-6)" }}>
+        <div
+          style={{
+            padding: "2rem",
+            textAlign: "center",
+            color: "var(--mantine-color-red-6)",
+          }}
+        >
           <p>Failed to load shipment details. Please try again.</p>
           <p style={{ fontSize: "0.875rem", marginTop: "0.5rem" }}>
             {error instanceof Error ? error.message : "Unknown error"}
@@ -62,7 +72,7 @@ export function ShipmentDetailsPage() {
   };
 
   return (
-    <PageCard title={`${shipment.reference}`}>
+    <PageCard title={shipment.general_info.reference_number}>
       <Stack gap="lg">
         {/* Reference Header */}
         <ReferenceHeader shipment={shipment} />

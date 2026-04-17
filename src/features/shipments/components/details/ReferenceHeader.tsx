@@ -1,4 +1,12 @@
-import { Group, Paper, Stack, Text, Image, Avatar, ActionIcon, Box as MantineBox } from "@mantine/core";
+import {
+  Group,
+  Paper,
+  Stack,
+  Text,
+  Image,
+  ActionIcon,
+  Box as MantineBox,
+} from "@mantine/core";
 import chatbubble from "@/assets/icons/chatbubble.svg";
 import shipmentLogo from "@/assets/logos/ShipmentLogo.png";
 import type { ShipmentResource } from "@/features/shipments/types/shipments.types";
@@ -10,7 +18,6 @@ interface ReferenceHeaderProps {
 export function ReferenceHeader({ shipment }: ReferenceHeaderProps) {
   return (
     <Group align="stretch" grow>
-      {/* First Paper: Client Header */}
       <Paper
         radius="md"
         withBorder
@@ -30,18 +37,9 @@ export function ReferenceHeader({ shipment }: ReferenceHeaderProps) {
             justifyContent: "space-between",
           }}
         >
-          <Group gap="xl">
-            <Avatar
-              src={shipment.client?.imageUrl ?? "/assets/logos/default-client.png"}
-              alt={shipment.client?.full_name ?? "Client Picture"}
-              size={50}
-              radius="xl"
-              color="jltOrange"
-            />
-            <Text fw={700} size="xl" c="jltBlue.8">
-              {shipment.client?.full_name ?? "—"}
-            </Text>
-          </Group>
+          <Text fw={700} size="xl" c="jltBlue.8">
+            {shipment.general_info.reference_number}
+          </Text>
           <ActionIcon
             variant="transparent"
             color="transparent"
@@ -57,22 +55,23 @@ export function ReferenceHeader({ shipment }: ReferenceHeaderProps) {
         <MantineBox p="lg" bg="white" style={{ flex: 1 }}>
           <Stack gap="sm">
             <Group style={{ minHeight: "1rem" }}>
-              <Text c="gray.6">COMPANY NAME:</Text>
-              <Text fw={450}>{shipment.client?.company_name ?? "—"}</Text>
+              <Text c="gray.6">CLIENT:</Text>
+              <Text fw={450}>{shipment.general_info.client || "—"}</Text>
             </Group>
             <Group style={{ minHeight: "1rem" }}>
-              <Text c="gray.6">COMPANY NUMBER:</Text>
-              <Text fw={450}>{shipment.client?.contact_number ?? "—"}</Text>
+              <Text c="gray.6">JOB ORDER ID:</Text>
+              <Text fw={450}>{shipment.general_info.job_order_id || "—"}</Text>
             </Group>
             <Group style={{ minHeight: "1rem" }}>
-              <Text c="gray.6">EMAIL:</Text>
-              <Text fw={450}>{shipment.client?.email ?? "—"}</Text>
+              <Text c="gray.6">QUOTATION FILE:</Text>
+              <Text fw={450} truncate>
+                {shipment.general_info.quotation_file || "—"}
+              </Text>
             </Group>
           </Stack>
         </MantineBox>
       </Paper>
 
-      {/* Second Paper: Shipment Status */}
       <Paper
         radius="md"
         withBorder
@@ -89,13 +88,14 @@ export function ReferenceHeader({ shipment }: ReferenceHeaderProps) {
           style={{
             flex: "0 0 20%",
             display: "flex",
-            justifyContent: "flex-end",
+            justifyContent: "space-between",
             alignItems: "center",
           }}
         >
           <Text fw={600} size="xl" c="green">
-            {shipment.status ?? "—"}
+            {shipment.general_info.status || "—"}
           </Text>
+          <Text c="jltBlue.8">#{shipment.general_info.id}</Text>
         </MantineBox>
 
         <MantineBox
@@ -109,15 +109,15 @@ export function ReferenceHeader({ shipment }: ReferenceHeaderProps) {
           <Stack gap="sm" style={{ zIndex: 2, position: "relative" }}>
             <Group gap="xs" wrap="nowrap" style={{ minHeight: "1rem" }}>
               <Text c="gray.6">COMMODITY:</Text>
-              <Text fw={450}>{shipment.commodity ?? "—"}</Text>
+              <Text fw={450}>{shipment.general_info.commodity || "—"}</Text>
             </Group>
             <Group gap="xs" wrap="nowrap" style={{ minHeight: "1rem" }}>
-              <Text c="gray.6">ORIGIN:</Text>
-              <Text fw={450}>{shipment.origin ?? "—"}</Text>
+              <Text c="gray.6">ETA:</Text>
+              <Text fw={450}>{shipment.general_info.eta || "—"}</Text>
             </Group>
             <Group gap="xs" wrap="nowrap" style={{ minHeight: "1rem" }}>
-              <Text c="gray.6">DESTINATION:</Text>
-              <Text fw={450}>{shipment.destination ?? "—"}</Text>
+              <Text c="gray.6">ETD:</Text>
+              <Text fw={450}>{shipment.general_info.etd || "—"}</Text>
             </Group>
           </Stack>
 

@@ -1,5 +1,14 @@
-import { Paper, Group, Text, Box as MantineBox, UnstyledButton } from "@mantine/core";
-import { ChevronRight, AccountBox } from "@nine-thirty-five/material-symbols-react/outlined";
+import {
+  Paper,
+  Group,
+  Text,
+  Box as MantineBox,
+  UnstyledButton,
+} from "@mantine/core";
+import {
+  ChevronRight,
+  AccountBox,
+} from "@nine-thirty-five/material-symbols-react/outlined";
 import { DetailGrid } from "@/components/DetailGrid";
 import type { ShipmentResource } from "@/features/shipments/types/shipments.types";
 
@@ -9,7 +18,11 @@ interface PersonInChargeProps {
   onToggle: () => void;
 }
 
-export function PersonInCharge({ shipment, expanded, onToggle }: PersonInChargeProps) {
+export function PersonInCharge({
+  shipment,
+  expanded,
+  onToggle,
+}: PersonInChargeProps) {
   return (
     <UnstyledButton w="100%" onClick={onToggle} style={{ textAlign: "left" }}>
       <Paper
@@ -21,7 +34,6 @@ export function PersonInCharge({ shipment, expanded, onToggle }: PersonInChargeP
           transition: "all 0.2s ease",
         }}
       >
-        {/* Top header strip */}
         <MantineBox
           w="100%"
           bg="#D4DAE0"
@@ -40,7 +52,7 @@ export function PersonInCharge({ shipment, expanded, onToggle }: PersonInChargeP
                 <AccountBox width="1.5rem" height="1.5rem" />
               </MantineBox>
               <Text fw={700} tt="uppercase" c="jltBlue.8">
-                Person In Charge
+                Contact Person
               </Text>
             </Group>
             <ChevronRight
@@ -54,13 +66,19 @@ export function PersonInCharge({ shipment, expanded, onToggle }: PersonInChargeP
           </Group>
         </MantineBox>
 
-        {/* Collapsible content */}
         {expanded && (
           <MantineBox p="lg" pb="xs">
             <DetailGrid
               rows={[
-                { label: "Name", value: shipment.person_in_charge?.name ?? "—" },
-                { label: "Remarks", value: shipment.person_in_charge?.remarks ?? "—" },
+                {
+                  label: "Name",
+                  value: shipment.contact_person.full_name || "—",
+                },
+                {
+                  label: "Contact Number",
+                  value: shipment.contact_person.contact_number || "—",
+                },
+                { label: "Email", value: shipment.contact_person.email || "—" },
               ]}
             />
           </MantineBox>

@@ -3,20 +3,34 @@ import { useNavigate, useParams } from "react-router";
 import { useQuery } from "@tanstack/react-query";
 import { PageCard } from "@/components/PageCard";
 import { AppTable, type AppTableColumn } from "@/components/AppTable";
-import { fetchShipments } from "../../services/shipments.service";
+import { fetchDeliveredShipments } from "../../services/shipments.service";
 import {
   SHIPMENT_STATUS,
   type ShipmentListItem,
-  type ShipmentClientGroup,
 } from "../../types/shipments.types";
 
 const COLUMNS: AppTableColumn<ShipmentListItem>[] = [
-  { key: "reference", label: "REFERENCE", width: "15%", render: (row) => row.reference },
-  { key: "client_name", label: "CLIENT NAME", width: "25%", render: (row) => row.client_name },
-  { key: "destination", label: "DESTINATION", width: "20%", render: (row) => row.destination },
+  {
+    key: "reference_number",
+    label: "REFERENCE",
+    width: "18%",
+    render: (row) => row.reference_number,
+  },
+  {
+    key: "client",
+    label: "CLIENT NAME",
+    width: "24%",
+    render: (row) => row.client,
+  },
+  {
+    key: "destination",
+    label: "DESTINATION",
+    width: "24%",
+    render: (row) => row.destination,
+  },
   { key: "eta", label: "ETA", width: "10%", render: (row) => row.eta },
   { key: "etd", label: "ETD", width: "10%", render: (row) => row.etd },
-  { key: "status", label: "STATUS", width: "12%", render: (row) => row.status },
+  { key: "status", label: "STATUS", width: "14%", render: (row) => row.status },
 ];
 
 export function DeliveredShipments() {
@@ -30,8 +44,7 @@ export function DeliveredShipments() {
   const { data, isLoading } = useQuery({
     queryKey: ["shipments", SHIPMENT_STATUS.DELIVERED, searchQuery, perPage],
     queryFn: () =>
-      fetchShipments({
-        status: SHIPMENT_STATUS.DELIVERED,
+      fetchDeliveredShipments({
         search: searchQuery || undefined,
         perPage,
       }),
@@ -42,13 +55,15 @@ export function DeliveredShipments() {
   const count = data?.pagination.count ?? 0;
 
   return (
-    <PageCard title="LIST OF SHIPMENTS" subtext="Delivered" subtextColor="#17314B">
+    <PageCard
+      title="LIST OF SHIPMENTS"
+      subtext="Delivered"
+      subtextColor="#17314B"
+    >
       <AppTable
         columns={COLUMNS}
-        data={isLoading ? [] : shipments.flatMap((group: ShipmentClientGroup) =>
-          group.shipments.map(shipment => ({ ...shipment, client_id: group.client_id }))
-        )}
-        rowKey={(row) => row.reference}
+        data={isLoading ? [] : shipments}
+        rowKey={(row) => row.id}
         withEntryControls
         perPage={perPage}
         onPerPageChange={setPerPage}
@@ -58,7 +73,7 @@ export function DeliveredShipments() {
         searchValue={search}
         onSearchChange={setSearch}
         onSearch={setSearchQuery}
-        onRowClick={(row) => navigate(`/shipments/${tab}/client/${row.client_id}/${row.reference}`)}
+        onRowClick={(row) => navigate(`/shipments/${tab}/client/0/${row.id}`)}
       />
     </PageCard>
   );
