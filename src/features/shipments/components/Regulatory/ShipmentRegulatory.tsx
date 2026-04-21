@@ -94,7 +94,11 @@ export function ShipmentRegulatory() {
   const isLoading = permitsLoading || licensesLoading;
 
   return (
-    <PageCard title="LIST OF REGULATORY" subtext="permits and licenses" subtextColor="#17314B">
+    <PageCard
+      title="LIST OF REGULATORY"
+      subtext="permits and licenses"
+      subtextColor="#17314B"
+    >
       <AppTable
         columns={COLUMNS}
         data={isLoading ? [] : allFlatItems}

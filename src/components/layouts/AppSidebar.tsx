@@ -1,13 +1,15 @@
 import { Flex, Box, Stack, Text, UnstyledButton, Tooltip } from "@mantine/core";
 import { useLocation, useNavigate } from "react-router";
+import { useAuthStore } from "@/stores/authStore";
+
 import classes from "./AppSidebar.module.css";
 import {
   BTN_HEIGHT_REM,
+  getSidebarItemsForTabs,
   PANEL_BASE_PADDING_REM,
   PANEL_INDENT_STEP_REM,
   PILL_HEIGHT_REM,
   RAIL_PADDING_TOP_REM,
-  getNavItems, // <-- import the role-aware builder
 } from "./AppSidebar.config";
 import {
   getActiveIndex,
@@ -18,22 +20,18 @@ import {
   type MenuNode,
   type NavItem,
 } from "./AppSidebarUtils";
-import { useAuthStore } from "@/stores/authStore"; // <-- import auth store
+
+// Component
 
 export function AppSidebar() {
   const location = useLocation();
   const navigate = useNavigate();
+  const user = useAuthStore((state) => state.user);
   const currentPath = location.pathname;
+  const navItems = getSidebarItemsForTabs(user?.tabs);
 
-  // Get user role from auth store
-  const userResource = useAuthStore((state) => state.user);
-  const role = userResource?.role ?? "";
-
-  // Build NAV_ITEMS dynamically based on role
-  const NAV_ITEMS = getNavItems(role);
-
-  const activeIndex = getActiveIndex(NAV_ITEMS, currentPath);
-  const activeItem = getActiveItem(NAV_ITEMS, currentPath);
+  const activeIndex = getActiveIndex(navItems, currentPath);
+  const activeItem = getActiveItem(navItems, currentPath);
   const panelOpen = !!activeItem?.subItems?.length;
 
   const pillTop =
@@ -115,13 +113,78 @@ export function AppSidebar() {
       {/* Rail background layer */}
       <Box className={classes.railBg} />
 
-      {/* Travelling pill layer */}
+      {/* Icon rail and travelling pill wrapper */}
       <Box
-        className={classes.activePill}
-        data-visible={activeIndex >= 0 || undefined}
-        data-panel-open={panelOpen || undefined}
-        style={{ transform: `translateY(${pillTop})` }}
-      />
+        style={{
+          position: "relative",
+          overflow: "hidden",
+          width: "var(--rail-width)",
+          height: "100%",
+          zIndex: 3,
+          flexShrink: 0,
+        }}
+      >
+        {/* Travelling pill layer */}
+        <Box
+          className={classes.activePill}
+          data-visible={activeIndex >= 0 || undefined}
+          data-panel-open={panelOpen || undefined}
+          style={{ transform: `translateY(${pillTop})` }}
+        />
+
+        {/* ── Icon rail ── */}
+        <Flex
+          align="center"
+          direction="column"
+          wrap="wrap"
+          pt="1.125rem"
+          w="5.5625rem"
+          h="100%"
+          style={{ zIndex: 3, flexShrink: 0, overflow: "visible" }}
+        >
+          {/* Nav icon buttons */}
+          {navItems.map((item) => {
+            const active = isItemActive(item, currentPath);
+            return (
+              <Tooltip
+                key={item.id}
+                label={item.label}
+                position="right"
+                offset={8}
+                transitionProps={{ transition: "slide-right", duration: 200 }}
+                color="jltOrange.5"
+                zIndex={300}
+                disabled={active}
+                styles={{
+                  tooltip: {
+                    color: "var(--mantine-color-jltBlue)",
+                  },
+                }}
+              >
+                <UnstyledButton
+                  onClick={() => handleIconClick(item)}
+                  data-active={active || undefined}
+                  className={classes.iconBtn}
+                  w="100%"
+                  h={`${BTN_HEIGHT_REM}rem`}
+                  display="flex"
+                  style={{
+                    alignItems: "center",
+                    justifyContent: "center",
+                    position: "relative",
+                    zIndex: 1,
+                    overflow: "visible",
+                    color: active ? "var(--mantine-color-jltBlue-8)" : "white",
+                    transition: "color 150ms ease",
+                  }}
+                >
+                  {item.icon}
+                </UnstyledButton>
+              </Tooltip>
+            );
+          })}
+        </Flex>
+      </Box>
 
       {/* ── Sub-item panel ── */}
       <Box
@@ -136,59 +199,6 @@ export function AppSidebar() {
           </Box>
         )}
       </Box>
-
-      {/* ── Icon rail ── */}
-      <Flex
-        align="center"
-        direction="column"
-        wrap="wrap"
-        pt="1.125rem"
-        style={{ zIndex: 3, flexShrink: 0, overflow: "visible" }}
-        w="5.5625rem"
-        h="100%"
-      >
-        {/* Nav icon buttons */}
-        {NAV_ITEMS.map((item) => {
-          const active = isItemActive(item, currentPath);
-          return (
-            <Tooltip
-              key={item.id}
-              label={item.label}
-              position="right"
-              offset={8}
-              transitionProps={{ transition: "slide-right", duration: 200 }}
-              color="jltOrange.5"
-              zIndex={300}
-              disabled={active}
-              styles={{
-                tooltip: {
-                  color: "var(--mantine-color-jltBlue)",
-                },
-              }}
-            >
-              <UnstyledButton
-                onClick={() => handleIconClick(item)}
-                data-active={active || undefined}
-                className={classes.iconBtn}
-                w="100%"
-                h={`${BTN_HEIGHT_REM}rem`}
-                display="flex"
-                style={{
-                  alignItems: "center",
-                  justifyContent: "center",
-                  position: "relative",
-                  zIndex: 1,
-                  overflow: "visible",
-                  color: active ? "var(--mantine-color-jltBlue-8)" : "white",
-                  transition: "color 150ms ease",
-                }}
-              >
-                {item.icon}
-              </UnstyledButton>
-            </Tooltip>
-          );
-        })}
-      </Flex>
     </Box>
   );
 }

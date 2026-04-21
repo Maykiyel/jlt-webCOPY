@@ -7,7 +7,7 @@ import type { ComponentType } from "react";
 import classes from "./AppButton.module.css";
 import { ArrowRightAlt } from "@nine-thirty-five/material-symbols-react/outlined";
 
-type AppButtonVariant = "primary" | "secondary";
+type AppButtonVariant = "primary";
 
 interface AppButtonProps extends UnstyledButtonProps {
   variant?: AppButtonVariant;
@@ -29,8 +29,7 @@ export function AppButton({
   icon: BadgeIcon,
   ...rest
 }: AppButtonProps) {
-  const ResolvedIcon =
-    BadgeIcon ?? (variant === "primary" ? ArrowRightAlt : null);
+  const ResolvedIcon = BadgeIcon ?? ArrowRightAlt;
 
   return (
     <UnstyledButton

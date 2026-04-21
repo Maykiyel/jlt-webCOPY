@@ -5,7 +5,6 @@ import type {
   RespondedQuotationsResponse,
   RespondedQuotationListItem,
   QuotationResource,
-  QuotationFileResource,
   QuotationStatus,
 } from "../types/quotations.types";
 
@@ -123,17 +122,6 @@ export async function updateQuotationAssignee(
       as_id: asId,
     },
   );
-  return response.data.data;
-}
-
-export async function fetchQuotationFiles(
-  id: string,
-  type: "REQUESTED" | "PROPOSAL" = "REQUESTED",
-): Promise<QuotationFileResource[]> {
-  const response = await apiClient.get<{
-    data: QuotationFileResource[] | string;
-  }>(`/quotations/${id}/files`, { params: { type } });
-  if (typeof response.data.data === "string") return [];
   return response.data.data;
 }
 

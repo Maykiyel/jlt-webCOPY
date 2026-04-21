@@ -7,26 +7,25 @@ import { fetchShipments } from "../services/shipments.service";
 import {
   SHIPMENT_STATUS,
   type ShipmentListItem,
-  type ShipmentClientGroup,
 } from "../types/shipments.types";
 
 const COLUMNS: AppTableColumn<ShipmentListItem>[] = [
   {
-    key: "reference",
+    key: "reference_number",
     label: "REFERENCE",
-    width: "15%",
-    render: (row) => row.reference,
+    width: "18%",
+    render: (row) => row.reference_number,
   },
   {
-    key: "client_name",
+    key: "client",
     label: "CLIENT NAME",
-    width: "25%",
-    render: (row) => row.client_name,
+    width: "24%",
+    render: (row) => row.client,
   },
   {
     key: "destination",
     label: "DESTINATION",
-    width: "20%",
+    width: "24%",
     render: (row) => row.destination,
   },
   {
@@ -44,7 +43,7 @@ const COLUMNS: AppTableColumn<ShipmentListItem>[] = [
   {
     key: "status",
     label: "STATUS",
-    width: "12%",
+    width: "14%",
     render: (row) => row.status,
   },
 ];
@@ -75,10 +74,8 @@ export function ShipmentList() {
     <PageCard title="LIST OF SHIPMENTS">
       <AppTable
         columns={COLUMNS}
-        data={isLoading ? [] : shipments.flatMap((group: ShipmentClientGroup) => 
-          group.shipments.map(shipment => ({ ...shipment, client_id: group.client_id }))
-        )}
-        rowKey={(row) => row.reference}
+        data={isLoading ? [] : shipments}
+        rowKey={(row) => row.id}
         withEntryControls
         perPage={perPage}
         onPerPageChange={setPerPage}
@@ -88,7 +85,7 @@ export function ShipmentList() {
         searchValue={search}
         onSearchChange={setSearch}
         onSearch={setSearchQuery}
-        onRowClick={(row) => navigate(`/shipments/${tab}/client/${row.client_id}/${row.reference}`)}
+        onRowClick={(row) => navigate(`/shipments/${tab}/client/0/${row.id}`)}
       />
     </PageCard>
   );

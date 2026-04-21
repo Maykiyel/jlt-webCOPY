@@ -5,7 +5,10 @@ import { useQuery } from "@tanstack/react-query";
 import { PageCard } from "@/components/PageCard";
 import { AppTable, type AppTableColumn } from "@/components/AppTable";
 import { fetchPermits } from "../../services/shipments.service";
-import type { PermitListItem, PermitClientGroup } from "../../types/shipments.types";
+import type {
+  PermitListItem,
+  PermitClientGroup,
+} from "../../types/shipments.types";
 
 const COLUMNS: AppTableColumn<PermitListItem>[] = [
   {
@@ -69,7 +72,11 @@ export function PermitsShipments() {
     <PageCard title="LIST OF PERMITS" subtext="permits" subtextColor="#17314B">
       <AppTable
         columns={COLUMNS}
-        data={isLoading ? [] : permits.flatMap((group: PermitClientGroup) => group.permits)}
+        data={
+          isLoading
+            ? []
+            : permits.flatMap((group: PermitClientGroup) => group.permits)
+        }
         rowKey={(row) => row.id}
         withEntryControls
         perPage={perPage}
@@ -80,7 +87,9 @@ export function PermitsShipments() {
         searchValue={search}
         onSearchChange={setSearch}
         onSearch={setSearchQuery}
-        onRowClick={(row) => navigate(`/shipments/regulatory/permits/${row.id}`)}
+        onRowClick={(row) =>
+          navigate(`/shipments/regulatory/permits/${row.id}`)
+        }
       />
     </PageCard>
   );

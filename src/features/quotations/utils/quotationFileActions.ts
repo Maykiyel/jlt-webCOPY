@@ -1,41 +1,41 @@
-import { fetchQuotationProposalFile } from "@/features/quotations/api/quotationFiles.api";
+import {
+  fetchQuotationProposalFile,
+  getQuotationFileDownloadUrl,
+} from "@/features/quotations/api/quotationFiles.api";
+import { printSecureFile, downloadSecureFile } from "@/utils/secureFileActions";
 
 /**
- * Opens the proposal PDF for printing, or alerts if not found.
+ * Opens the proposal PDF for printing by delegating to the generic secure file action.
  */
 export async function handlePrintProposalFile(quotationId: string) {
   const file = await fetchQuotationProposalFile(quotationId);
-  if (file && file.file_url) {
-    window.open(file.file_url, "_blank");
+
+  if (file && file.id) {
+    const url = getQuotationFileDownloadUrl(file.id);
+
+    // Use the shared secure print action
+    await printSecureFile(url);
   } else {
     window.alert("No proposal PDF found for this quotation.");
   }
 }
 
 /**
- * Downloads the proposal PDF as a Blob, or alerts if not found.
+ * Downloads the proposal PDF by delegating to the generic secure file action.
  */
 export async function handleDownloadProposalFile(
   quotationId: string,
   fileName?: string,
 ) {
   const file = await fetchQuotationProposalFile(quotationId);
-  if (file && file.file_url) {
-    try {
-      const response = await fetch(file.file_url, { credentials: "include" });
-      if (!response.ok) throw new Error("Failed to fetch file");
-      const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
-      const link = document.createElement("a");
-      link.href = url;
-      link.download = fileName || file.file_name || "quotation-proposal.pdf";
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      window.URL.revokeObjectURL(url);
-    } catch (err) {
-      window.alert("Failed to download file.");
-    }
+
+  if (file && file.id) {
+    const url = getQuotationFileDownloadUrl(file.id);
+    const finalFileName =
+      fileName || file.file_name || "quotation-proposal.pdf";
+
+    // Use the shared secure download action
+    await downloadSecureFile(url, finalFileName);
   } else {
     window.alert("No proposal PDF found for this quotation.");
   }

@@ -5,7 +5,10 @@ import { useQuery } from "@tanstack/react-query";
 import { PageCard } from "@/components/PageCard";
 import { AppTable, type AppTableColumn } from "@/components/AppTable";
 import { fetchLicenses } from "../../services/shipments.service";
-import type { LicenseListItem, LicenseClientGroup } from "../../types/shipments.types";
+import type {
+  LicenseListItem,
+  LicenseClientGroup,
+} from "../../types/shipments.types";
 
 const COLUMNS: AppTableColumn<LicenseListItem>[] = [
   {
@@ -66,10 +69,18 @@ export function LicensesShipments() {
   const count = data?.pagination.count ?? 0;
 
   return (
-    <PageCard title="LIST OF LICENSES" subtext="licenses" subtextColor="#17314B">
+    <PageCard
+      title="LIST OF LICENSES"
+      subtext="licenses"
+      subtextColor="#17314B"
+    >
       <AppTable
         columns={COLUMNS}
-        data={isLoading ? [] : licenses.flatMap((group: LicenseClientGroup) => group.licenses)}
+        data={
+          isLoading
+            ? []
+            : licenses.flatMap((group: LicenseClientGroup) => group.licenses)
+        }
         rowKey={(row) => row.id}
         withEntryControls
         perPage={perPage}
@@ -80,7 +91,9 @@ export function LicensesShipments() {
         searchValue={search}
         onSearchChange={setSearch}
         onSearch={setSearchQuery}
-        onRowClick={(row) => navigate(`/shipments/regulatory/licenses/${row.id}`)}
+        onRowClick={(row) =>
+          navigate(`/shipments/regulatory/licenses/${row.id}`)
+        }
       />
     </PageCard>
   );

@@ -1,5 +1,14 @@
-import { Paper, Group, Text, Box as MantineBox, UnstyledButton } from "@mantine/core";
-import { ChevronRight, InboxTextPerson } from "@nine-thirty-five/material-symbols-react/outlined";
+import {
+  Paper,
+  Group,
+  Text,
+  Box as MantineBox,
+  UnstyledButton,
+} from "@mantine/core";
+import {
+  ChevronRight,
+  InboxTextPerson,
+} from "@nine-thirty-five/material-symbols-react/outlined";
 import { DetailGrid } from "@/components/DetailGrid";
 import type { ShipmentResource } from "@/features/shipments/types/shipments.types";
 
@@ -9,7 +18,11 @@ interface ConsigneeDetailsProps {
   onToggle: () => void;
 }
 
-export function ConsigneeDetails({ shipment, expanded, onToggle }: ConsigneeDetailsProps) {
+export function ConsigneeDetails({
+  shipment,
+  expanded,
+  onToggle,
+}: ConsigneeDetailsProps) {
   return (
     <UnstyledButton w="100%" onClick={onToggle} style={{ textAlign: "left" }}>
       <Paper
@@ -21,7 +34,6 @@ export function ConsigneeDetails({ shipment, expanded, onToggle }: ConsigneeDeta
           transition: "all 0.2s ease",
         }}
       >
-        {/* Top header strip */}
         <MantineBox
           w="100%"
           bg="#D4DAE0"
@@ -40,7 +52,7 @@ export function ConsigneeDetails({ shipment, expanded, onToggle }: ConsigneeDeta
                 <InboxTextPerson width="1.5rem" height="1.5rem" />
               </MantineBox>
               <Text fw={700} tt="uppercase" c="jltBlue.8">
-                Consignee Details
+                Commodity Details
               </Text>
             </Group>
             <ChevronRight
@@ -54,16 +66,26 @@ export function ConsigneeDetails({ shipment, expanded, onToggle }: ConsigneeDeta
           </Group>
         </MantineBox>
 
-        {/* Collapsible content */}
         {expanded && (
           <MantineBox p="lg" pb="sm">
             <DetailGrid
               rows={[
-                { label: "Company Name", value: shipment.consignee_details.company_name },
-                { label: "Company Address", value: shipment.consignee_details.company_address },
-                { label: "Contact Person", value: shipment.consignee_details.contact_person },
-                { label: "Contact Number", value: shipment.consignee_details.contact_number },
-                { label: "Email Address", value: shipment.consignee_details.email },
+                {
+                  label: "Commodity",
+                  value: shipment.commodity_details.commodity,
+                },
+                {
+                  label: "Consignee Name",
+                  value: shipment.commodity_details.consignee_name,
+                },
+                {
+                  label: "Cargo Type",
+                  value: shipment.commodity_details.cargo_type,
+                },
+                {
+                  label: "Container Size",
+                  value: shipment.commodity_details.container_size,
+                },
               ]}
             />
           </MantineBox>
@@ -72,3 +94,4 @@ export function ConsigneeDetails({ shipment, expanded, onToggle }: ConsigneeDeta
     </UnstyledButton>
   );
 }
+  

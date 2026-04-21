@@ -6,19 +6,35 @@ import { lazy } from "react";
 import NotFound from "./routes/NotFound";
 import { Loader } from "@mantine/core";
 
+//auth import
 const LoginPage = lazy(() => import("./routes/auth/LoginPage"));
-const DashboardPage = lazy(() => import("./routes/app/dashboard/DashboardPage"));
-const AccountSettings = lazy(() => import("./routes/app/account-settings/AccountSettingsPage"));
+
+//dashboard import
+const DashboardPage = lazy(
+  () => import("./routes/app/dashboard/DashboardPage"),
+);
+
+//account settings import
+const AccountSettings = lazy(
+  () => import("./routes/app/account-settings/AccountSettingsPage"),
+);
+
+//Quotation imports
 const Quotations = lazy(() => import("./routes/app/quotations/QuotationsPage"));
-const QuotationViewerPage = lazy(() => import("./routes/app/quotations/QuotationViewerPage"));
+const QuotationViewerPage = lazy(
+  () => import("./routes/app/quotations/QuotationViewerPage"),
+);
+
+//Shipment Imports
 const Shipments = lazy(() => import("./routes/app/shipments/ShipmentsPage"));
 const ShipmentDetailsPage = lazy(() =>
   import("@/features/shipments/pages/ShipmentDetails").then((m) => ({
     default: m.ShipmentDetailsPage,
   })),
 );
-const Accounts = lazy(() => import("./routes/app/accounts/AccountsPage"));
-const AccountsPage = lazy(() => import("./routes/app/accounts/AccountsPage"));
+
+//Tool imports
+const Tools = lazy(() => import("./routes/app/tools/ToolsPage"));
 
 export const router = createBrowserRouter([
   // ==========================================
@@ -40,6 +56,8 @@ export const router = createBrowserRouter([
         Component: AppLayout,
         children: [
           { index: true, Component: DashboardPage },
+
+          //Account Settings routes
           { path: "account-settings", Component: AccountSettings },
 
           // Quotation routes — most specific first
@@ -108,14 +126,13 @@ export const router = createBrowserRouter([
           { path: "shipments/:category", Component: Shipments },
           { path: "shipments", Component: Shipments },
 
-          // ==========================================
-          // Accounts routes
-          // ==========================================
-          { path: "accounts/:category/:subCategory/:id", Component: AccountsPage },
-          { path: "accounts/:category/:id", Component: AccountsPage },
-          { path: "accounts/:category/:subCategory", Component: AccountsPage },
-          { path: "accounts/:category", Component: AccountsPage },
-          { path: "accounts", Component: AccountsPage },
+          // ── Tools routes ──
+          { path: "tools/services", Component: Tools },
+          { path: "tools/messages", Component: Tools },
+          { path: "tools/templates", Component: Tools },
+          { path: "tools", Component: Tools },
+
+          { path: "*", Component: NotFound },
         ],
       },
     ],

@@ -1,20 +1,64 @@
-// ─── Index response shape (web platform) ──────────────────────────────────────
+// ─── Shipment API shape ───────────────────────────────────────────────────────
+
+export interface ShipmentGeneralInfo {
+  id: number;
+  reference_number: string;
+  job_order_id: number;
+  quotation_file: string;
+  client: string;
+  status: string;
+  commodity: string;
+  destination: string;
+  eta: string;
+  etd: string;
+  date: string;
+}
+
+export interface ShipmentCommodityDetails {
+  commodity: string;
+  consignee_name: string;
+  cargo_type: string;
+  container_size: string;
+}
+
+export interface ShipmentContactPerson {
+  full_name: string;
+  contact_number: string;
+  email: string;
+}
+
+export interface ShipmentInformationDetails {
+  origin: string;
+  destination: string;
+  account_handler: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface ShipmentResource {
+  general_info: ShipmentGeneralInfo;
+  commodity_details: ShipmentCommodityDetails;
+  contact_person: ShipmentContactPerson;
+  shipment_information: ShipmentInformationDetails;
+}
+
+export interface ShipmentApiEnvelope<T> {
+  message: string;
+  data: T;
+  code: number;
+  error: boolean;
+}
+
+// ─── UI-friendly list shape ───────────────────────────────────────────────────
 
 export interface ShipmentListItem {
-  reference: string;
-  client_name: string;
-  client_id?: number;
+  id: number;
+  reference_number: string;
+  client: string;
   destination: string;
   eta: string;
   etd: string;
   status: string;
-}
-
-export interface ShipmentClientGroup {
-  client_id: number;
-  name: string;
-  shipment_count: number;
-  shipments: ShipmentListItem[];
 }
 
 export interface ShipmentsPagination {
@@ -24,78 +68,8 @@ export interface ShipmentsPagination {
 }
 
 export interface ShipmentsIndexResponse {
-  shipments: ShipmentClientGroup[];
+  shipments: ShipmentListItem[];
   pagination: ShipmentsPagination;
-}
-
-// ─── Full shipment resource (GET /shipments/{id}) ───────────────────────────
-
-export interface ShipmentResource {
-  reference: string;
-  client: {
-    full_name: string;
-    company_name: string;
-    contact_number: string;
-    email: string;
-    imageUrl?: string;
-  } | null;
-  status: string;
-  created_at: string;
-  updated_at: string;
-
-  shipment_details: {
-    service_type: string;
-    freight_transport_mode: string;
-    service: string;
-    commodity: string;
-    volume_dimension: string;
-    origin: string;
-    destination: string;
-    details_remarks: string | null;
-  };
-
-  consignee_details: {
-    company_name: string;
-    company_address: string;
-    contact_person: string;
-    contact_number: string;
-    email: string;
-  };
-
-  person_in_charge: {
-    name: string;
-    remarks: string | null;
-  } | null;
-
-  billing_summary: {
-    terms_of_payment: string;
-
-    description_of_charges: {
-      value: string; // overall value
-      fields: {
-        bureau_of_customs_accreditation_fee: string;
-        certificate_of_accreditation: string;
-      };
-    };
-
-    jltcb_service_charges: {
-      value: string; // overall value
-      fields: {
-        certificate_of_accreditation: string;
-        royal_fee: string;
-      };
-    };
-
-    estimated_total_landed_cost: string;
-  } | null;
-
-  origin: string;
-  destination: string;
-  eta: string;
-  etd: string;
-  commodity: string;
-  container_size: string | null;
-  remarks: string | null;
 }
 
 // ─── Status filter ─────────────────────────────────────────────────────────────
@@ -108,7 +82,7 @@ export const SHIPMENT_STATUS = {
 export type ShipmentStatus =
   (typeof SHIPMENT_STATUS)[keyof typeof SHIPMENT_STATUS];
 
-//Confirmation for details regarding Permits and Licenses is still pending, so these are just placeholders for now. 
+//Confirmation for details regarding Permits and Licenses is still pending, so these are just placeholders for now.
 // ─── Permits ──────────────────────────────────────────────────────────────────
 
 export interface PermitListItem {

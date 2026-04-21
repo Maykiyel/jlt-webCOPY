@@ -6,11 +6,10 @@ import {
   ManageAccounts,
   FolderManaged,
 } from "@nine-thirty-five/material-symbols-react/rounded";
+import type { UserTabs } from "@/types/api";
 import type { NavItem } from "./AppSidebarUtils";
-import { ROLES } from "@/types/roles";
 
-// Default items (for all roles except IT)
-const DEFAULT_ITEMS: NavItem[] = [
+export const NAV_ITEMS: NavItem[] = [
   {
     id: "dashboard",
     icon: <Dashboard width="2rem" height="2rem" />,
@@ -66,24 +65,8 @@ const DEFAULT_ITEMS: NavItem[] = [
     icon: <ManageAccounts width="2rem" height="2rem" />,
     label: "Accounts",
     subItems: [
-      { label: "Clients",
-        path: "/accounts/clients", 
-        subItems: [
-          { label: "Old", path: "/accounts/clients/old" },
-          { label: "New", path: "/accounts/clients/new" },
-        ],
-      },
-      { 
-        label: "Employees", 
-        path: "/accounts/employees",
-        subItems: [
-          { label: "Operations", path: "/accounts/employees/operations" },
-          { label: "Account Specialists", path: "/accounts/employees/account-specialists" },
-          { label: "Human Resources", path: "/accounts/employees/hr" },
-          { label: "IT", path: "/accounts/employees/it" },
-          { label: "Finance", path: "/accounts/employees/finance" },
-        ],
-      },
+      { label: "Clients", path: "/accounts/clients" },
+      { label: "Employees", path: "/accounts/employees" },
     ],
   },
   {
@@ -94,48 +77,32 @@ const DEFAULT_ITEMS: NavItem[] = [
   },
 ];
 
-// Role-aware builder
-export function getNavItems(role: string): NavItem[] {
-  if (role === ROLES.IT) {
-    // IT role: only Dashboard + Accounts
-    return [
-      {
-        id: "dashboard",
-        icon: <Dashboard width="2rem" height="2rem" />,
-        label: "Dashboard",
-        path: "/",
-      },
-      {
-        id: "accounts",
-        icon: <ManageAccounts width="2rem" height="2rem" />,
-        label: "Accounts",
-        subItems: [
-          { label: "Clients",
-            path: "/accounts/clients", 
-            subItems: [
-              { label: "Old", path: "/accounts/clients/old" },
-              { label: "New", path: "/accounts/clients/new" },
-            ],
-          },
-          { 
-            label: "Employees", 
-            path: "/accounts/employees",
-            subItems: [
-              { label: "AS", path: "/accounts/employees/account-specialists" },
-              { label: "HR", path: "/accounts/employees/human-resources" },
-              { label: "IT", path: "/accounts/employees/it" },
-              { label: "Marketing", path: "/accounts/employees/marketing" },
-              { label: "Operations", path: "/accounts/employees/operations" },
-              { label: "Finance", path: "/accounts/employees/finance" },
-            ],
-          },
-        ],
-      },
-    ];
-  }
+type SidebarTabKey = keyof Pick<
+  UserTabs,
+  "dashboard" | "leads" | "shipments" | "accounts" | "job_orders" | "quotations" | "templates"
+>;
 
-  // No roles return default menu
-  return DEFAULT_ITEMS;
+const ITEM_TAB_KEYS: Partial<Record<string, SidebarTabKey>> = {
+  dashboard: "dashboard",
+  leads: "leads",
+  shipments: "shipments",
+  quotations: "quotations",
+  accounts: "accounts",
+  jobOrders: "job_orders",
+  tools: "templates",
+};
+
+function filterSidebarItemsByTabs(items: NavItem[], tabs?: UserTabs): NavItem[] {
+  if (!tabs) return items;
+
+  return items.filter((item) => {
+    const tabKey = ITEM_TAB_KEYS[item.id];
+    return tabKey ? tabs[tabKey] : true;
+  });
+}
+
+export function getSidebarItemsForTabs(tabs?: UserTabs): NavItem[] {
+  return filterSidebarItemsByTabs(NAV_ITEMS, tabs);
 }
 
 export const BTN_HEIGHT_REM = 5;

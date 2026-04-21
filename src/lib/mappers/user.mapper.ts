@@ -44,6 +44,8 @@ export function toUser(resource: UserResource): User {
     imageUrl: resource.image_path,
     createdAt: new Date(resource.created_at),
     updatedAt: new Date(resource.updated_at),
+    tabs: resource.tabs,
+    permissions: resource.permissions,
   };
 }
 
@@ -118,6 +120,7 @@ export function getUserDisplayName(user: User | UserResource): string {
  * const role = getUserRole(user); // "Account Specialist"
  */
 export function getUserRole(user: User | UserResource): Role {
+  
   return user.role;
 }
 

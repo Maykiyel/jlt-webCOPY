@@ -1,5 +1,14 @@
-import { Paper, Group, Text, Box as MantineBox, UnstyledButton } from "@mantine/core";
-import { ChevronRight, Box } from "@nine-thirty-five/material-symbols-react/outlined";
+import {
+  Paper,
+  Group,
+  Text,
+  Box as MantineBox,
+  UnstyledButton,
+} from "@mantine/core";
+import {
+  ChevronRight,
+  Box,
+} from "@nine-thirty-five/material-symbols-react/outlined";
 import { DetailGrid } from "@/components/DetailGrid";
 import type { ShipmentResource } from "@/features/shipments/types/shipments.types";
 
@@ -9,7 +18,11 @@ interface ShipmentInformationProps {
   onToggle: () => void;
 }
 
-export function ShipmentInformation({ shipment, expanded, onToggle }: ShipmentInformationProps) {
+export function ShipmentInformation({
+  shipment,
+  expanded,
+  onToggle,
+}: ShipmentInformationProps) {
   return (
     <UnstyledButton w="100%" onClick={onToggle} style={{ textAlign: "left" }}>
       <Paper
@@ -21,7 +34,6 @@ export function ShipmentInformation({ shipment, expanded, onToggle }: ShipmentIn
           transition: "all 0.2s ease",
         }}
       >
-        {/* Top header strip */}
         <MantineBox
           w="100%"
           bg="#D4DAE0"
@@ -54,21 +66,31 @@ export function ShipmentInformation({ shipment, expanded, onToggle }: ShipmentIn
           </Group>
         </MantineBox>
 
-        {/* Collapsible content */}
         {expanded && (
           <MantineBox p="lg" pb="sm">
             <DetailGrid
               rows={[
-                { label: "Service Type", value: shipment.shipment_details.service_type },
-                { label: "Freight Transport Mode", value: shipment.shipment_details.freight_transport_mode },
-                { label: "Service", value: shipment.shipment_details.service },
-                { label: "Commodity", value: shipment.shipment_details.commodity },
-                { label: "Volume (Dimension)", value: shipment.shipment_details.volume_dimension },
-                { label: "Origin", value: shipment.shipment_details.origin },
-                { label: "Destination", value: shipment.shipment_details.destination },
-                ...(shipment.shipment_details.details_remarks
-                  ? [{ label: "Details / Remarks", value: shipment.shipment_details.details_remarks }]
-                  : []),
+                {
+                  label: "Origin",
+                  value: shipment.shipment_information.origin,
+                },
+                {
+                  label: "Destination",
+                  value: shipment.shipment_information.destination,
+                },
+                {
+                  label: "Account Handler",
+                  value: shipment.shipment_information.account_handler,
+                },
+                { label: "Shipment Date", value: shipment.general_info.date },
+                {
+                  label: "Created At",
+                  value: shipment.shipment_information.created_at,
+                },
+                {
+                  label: "Updated At",
+                  value: shipment.shipment_information.updated_at,
+                },
               ]}
             />
           </MantineBox>

@@ -3,9 +3,11 @@ import { getUserRole } from "@/lib/mappers/user.mapper";
 import { ROLES } from "@/types/roles";
 
 export const permissions = {
+ 
   // Quotations
   canCreateQuotation: (user: User | UserResource) => {
     const role = getUserRole(user);
+
     const isAS =
       role === ROLES.ACCOUNT_SPECIALIST ||
       role === ROLES.LEAD_ACCOUNT_SPECIALIST;

@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios, { type AxiosRequestConfig } from "axios";
 import { useAuthStore } from "@/stores/authStore";
 
 // Create axios instance
@@ -40,28 +40,46 @@ apiClient.interceptors.response.use(
   },
 );
 
-// Generic API methods with proper typing
-export async function GET<T>(url: string): Promise<T> {
-  const response = await apiClient.get<T>(url);
+// Generic API methods with proper typing and config support
+export async function GET<T>(
+  url: string,
+  config?: AxiosRequestConfig,
+): Promise<T> {
+  const response = await apiClient.get<T>(url, config);
   return response.data;
 }
 
-export async function POST<T>(url: string, data?: unknown): Promise<T> {
-  const response = await apiClient.post<T>(url, data);
+export async function POST<T>(
+  url: string,
+  data?: unknown,
+  config?: AxiosRequestConfig,
+): Promise<T> {
+  const response = await apiClient.post<T>(url, data, config);
   return response.data;
 }
 
-export async function PUT<T>(url: string, data?: unknown): Promise<T> {
-  const response = await apiClient.put<T>(url, data);
+export async function PUT<T>(
+  url: string,
+  data?: unknown,
+  config?: AxiosRequestConfig,
+): Promise<T> {
+  const response = await apiClient.put<T>(url, data, config);
   return response.data;
 }
 
-export async function PATCH<T>(url: string, data?: unknown): Promise<T> {
-  const response = await apiClient.patch<T>(url, data);
+export async function PATCH<T>(
+  url: string,
+  data?: unknown,
+  config?: AxiosRequestConfig,
+): Promise<T> {
+  const response = await apiClient.patch<T>(url, data, config);
   return response.data;
 }
 
-export async function DELETE<T>(url: string): Promise<T> {
-  const response = await apiClient.delete<T>(url);
+export async function DELETE<T>(
+  url: string,
+  config?: AxiosRequestConfig,
+): Promise<T> {
+  const response = await apiClient.delete<T>(url, config);
   return response.data;
 }
