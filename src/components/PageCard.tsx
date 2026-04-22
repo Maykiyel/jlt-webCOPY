@@ -24,8 +24,9 @@ interface PageCardProps {
   hideDivider?: boolean;
   bodyPx?: string | number;
   bodyPy?: string | number;
-  hideBackButton?: boolean;
-  cardStyle?: React.CSSProperties;
+  showJobSwitch?: boolean;
+  jobSwitchValue?: "all" | "my-jobs";
+  onJobSwitchChange?: (value: "all" | "my-jobs") => void;
 }
 
 // ─── Component ────────────────────────────────────────────────────────────────
@@ -38,11 +39,11 @@ export function PageCard({
   fullHeight = false,
   children,
   onBack,
-  hideDivider = false,
   bodyPx = "xl",
   bodyPy = "lg",
-  hideBackButton = false,
-  cardStyle,
+  showJobSwitch = false,
+  jobSwitchValue = "all",
+  onJobSwitchChange,
 }: PageCardProps) {
   const navigate = useNavigate();
 
@@ -95,17 +96,34 @@ export function PageCard({
           </Group>
         </Group>
 
-        {action && <Box style={{ flexShrink: 0 }}>{action}</Box>}
-      </Group>
+        <Group gap="sm" wrap="nowrap">
+          {showJobSwitch && (
+            <Group gap={0} className={classes.jobSwitch} wrap="nowrap">
+              <UnstyledButton
+                type="button"
+                className={classes.jobSwitchOption}
+                data-active={jobSwitchValue === "all" || undefined}
+                aria-pressed={jobSwitchValue === "all"}
+                onClick={() => onJobSwitchChange?.("all")}
+              >
+                <span className={classes.jobSwitchLabel}>ALL</span>
+              </UnstyledButton>
 
-      {!hideDivider && (
-        <Divider
-          size={"sm"}
-          w={"96%"}
-          mx={"auto"}
-          className={classes.divider}
-        />
-      )}
+              <UnstyledButton
+                type="button"
+                className={classes.jobSwitchOption}
+                data-active={jobSwitchValue === "my-jobs" || undefined}
+                aria-pressed={jobSwitchValue === "my-jobs"}
+                onClick={() => onJobSwitchChange?.("my-jobs")}
+              >
+                <span className={classes.jobSwitchLabel}>MY JOBS</span>
+              </UnstyledButton>
+            </Group>
+          )}
+
+          {action && <Box style={{ flexShrink: 0 }}>{action}</Box>}
+        </Group>
+      </Group>
 
       {/* ── Body ── */}
       <Box className={classes.body} px={bodyPx} py={bodyPy}>
