@@ -66,7 +66,6 @@ export function PageCard({
         height: fullHeight
           ? "calc(100vh - var(--app-shell-header-height) - var(--mantine-spacing-md) * 2)"
           : undefined,
-        ...cardStyle,
       }}
       pos="relative"
     >
@@ -78,11 +77,9 @@ export function PageCard({
         className={classes.header}
       >
         <Group gap="xs" wrap="nowrap">
-          {!hideBackButton && (
             <UnstyledButton onClick={handleBack} className={classes.backButton}>
               <ArrowBack width="1.25rem" height="1.25rem" fill="currentColor" />
             </UnstyledButton>
-          )}
 
           <Group gap="0.5rem" align="baseline" wrap="nowrap">
             <Title order={5} fw={800} tt="uppercase" c="jltBlue.8">
