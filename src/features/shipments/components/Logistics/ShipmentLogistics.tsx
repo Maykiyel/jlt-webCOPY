@@ -6,6 +6,7 @@ import { AppTable, type AppTableColumn } from "@/components/AppTable";
 import { fetchShipments } from "../../services/shipments.service";
 import { type ShipmentListItem } from "../../types/shipments.types";
 
+
 const COLUMNS: AppTableColumn<ShipmentListItem>[] = [
   {
     key: "reference_number",
