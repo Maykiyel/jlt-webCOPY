@@ -1,11 +1,4 @@
-import {
-  Box,
-  Card,
-  Group,
-  Text,
-  Title,
-  UnstyledButton,
-} from "@mantine/core";
+import { Box, Card, Group, Text, Title, UnstyledButton } from "@mantine/core";
 import { ArrowBack } from "@nine-thirty-five/material-symbols-react/rounded";
 import { useNavigate } from "react-router";
 import classes from "./PageCard.module.css";
@@ -21,6 +14,7 @@ interface PageCardProps {
   children?: React.ReactNode;
   onBack?: () => void;
   hideDivider?: boolean;
+  hideBackButton?: boolean;
   bodyPx?: string | number;
   bodyPy?: string | number;
   showJobSwitch?: boolean;
@@ -38,6 +32,7 @@ export function PageCard({
   subtextColor = "dimmed",
   action,
   fullHeight = false,
+  hideBackButton = false,
   children,
   onBack,
   bodyPx = "xl",
@@ -80,10 +75,11 @@ export function PageCard({
         className={classes.header}
       >
         <Group gap="xs" wrap="nowrap">
+          {!hideBackButton && (
             <UnstyledButton onClick={handleBack} className={classes.backButton}>
               <ArrowBack width="1.25rem" height="1.25rem" fill="currentColor" />
             </UnstyledButton>
-
+          )}
           <Group gap="0.5rem" align="baseline" wrap="nowrap">
             <Title order={5} fw={800} tt="uppercase" c="jltBlue.8">
               {title}
@@ -112,11 +108,15 @@ export function PageCard({
               <UnstyledButton
                 type="button"
                 className={classes.jobSwitchOption}
-                data-active={jobSwitchValue === jobSwitchSecondaryValue || undefined}
+                data-active={
+                  jobSwitchValue === jobSwitchSecondaryValue || undefined
+                }
                 aria-pressed={jobSwitchValue === jobSwitchSecondaryValue}
                 onClick={() => onJobSwitchChange?.(jobSwitchSecondaryValue)}
               >
-                <span className={classes.jobSwitchLabel}>{jobSwitchSecondaryLabel}</span>
+                <span className={classes.jobSwitchLabel}>
+                  {jobSwitchSecondaryLabel}
+                </span>
               </UnstyledButton>
             </Group>
           )}
