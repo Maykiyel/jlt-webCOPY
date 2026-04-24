@@ -12,8 +12,6 @@ import {
 import { ChevronRight, CalendarMonth, Search } from "@nine-thirty-five/material-symbols-react/rounded";
 import type { RequestedQuotationListItem } from "@/features/quotations/types/quotations.types";
 
-const entryOptions = ["10", "25", "50"];
-
 type RequestedQuotationRow = RequestedQuotationListItem;
 
 interface RequestFilterTableProps {
@@ -22,25 +20,20 @@ interface RequestFilterTableProps {
   onSearchChange: (value: string) => void;
   onSearch: (value: string) => void;
   perPage: number;
+  setPerPage?: (value: number) => void;
   onPerPageChange: (value: number) => void;
   searchPlaceholder?: string;
-}
-
-function toTitleCase(value: string) {
-  return value
-    .toLowerCase()
-    .replace(/[_-]+/g, " ")
-    .replace(/\b\w/g, (char) => char.toUpperCase());
+  total?: number;
 }
 
 function getStatusLabel(row: RequestedQuotationRow) {
-  return toTitleCase(
+  return( 
     row.assignment_status === "AVAILABLE"
       ? "Accept"
       : row.assignment_status === "ASSIGNED"
         ? "Accepted"
-        : "Reassignment Requested",
-  );
+        : "Reassignment Requested")
+ 
 }
 
 export function RequestFilterTable({
@@ -49,19 +42,41 @@ export function RequestFilterTable({
   onSearchChange,
   onSearch,
   perPage,
+  setPerPage,
   onPerPageChange,
-  searchPlaceholder = "SEARCH REFERENCE OR CLIENT",
+  total = 10,
 }: RequestFilterTableProps) {
   const [dateFilter, setDateFilter] = useState("");
   const [serviceFilter, setServiceFilter] = useState<string | null>(null);
   const [statusFilter, setStatusFilter] = useState<string | null>(null);
+
+  //for drop down ahow entries
+  const entryOptions = useMemo(() => {
+    if (total <= 0) return ["10"];
+    
+    const options = new Set<number>();
+    const increment = 10;
+    
+    // Add increments of 10
+    for (let i = increment; i < total; i += increment) {
+      options.add(i);
+      setPerPage?.(i);
+    }
+    
+    // Always add the total at the end
+    options.add(total);
+    
+    return Array.from(options)
+      .sort((a, b) => a - b)
+      .map(String);
+  }, [total]);
 
   const serviceOptions = useMemo(() => {
     const values = new Set<string>();
 
     quotations.forEach((row) => {
       if (row.service) {
-        values.add(toTitleCase(row.service));
+        values.add(row.service);
       }
     });
 
@@ -85,7 +100,7 @@ export function RequestFilterTable({
           w={300}
           size="sm"
           rightSectionWidth={45}
-          placeholder={searchPlaceholder}
+          placeholder={"SEARCH CLIENT OR REF NO."}
           value={searchValue}
           onChange={(event) => onSearchChange(event.currentTarget.value)}
           onKeyDown={(event) => {

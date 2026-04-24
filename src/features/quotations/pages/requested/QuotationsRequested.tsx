@@ -15,9 +15,9 @@ import type { RequestedQuotationListItem } from "@/features/quotations/types/quo
 
 import { requestedQueryKeys } from "./utils/requestedQueryKeys";
 
-import { RequestFilterClient } from "./components/requestFilterClient";
-import { RequestFilterTable } from "./components/requestFilterTable";
-import { RequestTable } from "./components/requestTable";
+import { RequestFilterClient } from "./components/RequestFilterClient";
+import { RequestFilterTable } from "./components/RequestFilterTable";
+import { RequestTable } from "./components/RequestTable";
 import ReassignModal from "./components/ReassignModal";
 import AcceptModal from "./components/AcceptModal";
 
@@ -130,6 +130,7 @@ export function QuotationsRequested() {
                 onSearch={handleSearch}
                 perPage={perPage}
                 onPerPageChange={setPerPage}
+                total={data?.counts.all_quotations}
               />
 
               <RequestTable

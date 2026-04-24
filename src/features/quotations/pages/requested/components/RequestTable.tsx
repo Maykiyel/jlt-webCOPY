@@ -104,10 +104,11 @@ export function RequestTable({
             ) : rows.length === 0 ? (
               <Table.Tr>
                 <Table.Td colSpan={4}>
-                <Center py="lg">
-                  <Text c="#475569" fz="0.813rem" lh={1.45}>
-                    No quotations found.
-                  </Text></Center> 
+                  <Center py="lg">
+                    <Text c="#475569" fz="0.813rem" lh={1.45}>
+                      No quotations found.
+                    </Text>
+                  </Center>
                 </Table.Td>
               </Table.Tr>
             ) : (
@@ -141,31 +142,34 @@ export function RequestTable({
                           <Text c="#475569" fz="0.813rem" lh={1.45}>
                             {row.logistics_service.commodity}
                           </Text>
+
                           <Text c="#475569" fz="0.813rem" lh={1.45}>
-                            {toTitleCase(row.logistics_service.service_type)} ·{" "}
+                            {toTitleCase(row.logistics_service.service_type)}{" "}
+                            ---&gt; {""}
                             {toTitleCase(row.logistics_service.transport_mode)}
                           </Text>
-                          <Group gap={5} align="center" wrap="nowrap">
+                          <Group align="center" wrap="nowrap">
                             <Text c="#475569" fz="0.813rem" lh={1.45}>
                               {row.logistics_service.origin}
                             </Text>
-                            <ArrowRightAlt width={15} />
+                            ---&gt; {""}
                             <Text c="#475569" fz="0.813rem" lh={1.45}>
                               {row.logistics_service.destination}
                             </Text>
                           </Group>
                         </>
                       ) : row.regulatory_service ? (
-                        <>
+                        <Group>
                           <Text c="#475569" fz="0.813rem" lh={1.45}>
                             Application Type
                           </Text>
-                          <Text c="#2a4058" fz="0.875rem" fw={700}>
+                          ---&gt; {""}
+                          <Text c="#2a4058" fz="0.875rem">
                             {toTitleCase(
                               row.regulatory_service.application_type,
                             )}
                           </Text>
-                        </>
+                        </Group>
                       ) : (
                         <Text c="#475569" fz="0.813rem" lh={1.45}>
                           -
