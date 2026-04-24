@@ -45,7 +45,7 @@ export function ShipmentDetailsPage() {
 
   if (error) {
     return (
-      <PageCard title="Shipment Details">
+      <PageCard title="Shipment Details" showDivider>
         <div
           style={{
             padding: "2rem",
@@ -72,7 +72,7 @@ export function ShipmentDetailsPage() {
   };
 
   return (
-    <PageCard title={shipment.general_info.reference_number}>
+    <PageCard title={shipment.general_info.reference_number} showDivider>
       <Stack gap="lg">
         {/* Reference Header */}
         <ReferenceHeader shipment={shipment} />

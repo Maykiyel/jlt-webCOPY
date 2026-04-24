@@ -238,6 +238,7 @@ export function TemplatesPage() {
     <>
       <PageCard
         title="List of Quotation Templates"
+        showDivider
         action={
           <Group gap="sm">
             <Button

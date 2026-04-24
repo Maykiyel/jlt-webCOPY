@@ -71,7 +71,7 @@ export function ShipmentList() {
   const count = data?.pagination.count ?? 0;
 
   return (
-    <PageCard title="LIST OF SHIPMENTS">
+    <PageCard title="LIST OF SHIPMENTS" showDivider>
       <AppTable
         columns={COLUMNS}
         data={isLoading ? [] : shipments}
