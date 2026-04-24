@@ -133,6 +133,7 @@ interface FetchRespondedQuotationsParams {
 
 interface FetchRequestedQuotationsParams {
   search?: string;
+  as_search?: string;
   client_type?: "NEW" | "OLD";
   perPage?: number;
   "filter[assignment_status]"?: string;
@@ -158,6 +159,7 @@ export async function fetchRequestedQuotations(
         ? { "filter[service]": params["filter[service]"] }
         : {}),
       ...(params.search ? { search: params.search } : {}),
+      ...(params.as_search ? { as_search: params.as_search } : {}),
       ...(params.client_type ? { client_type: params.client_type } : {}),
       ...(params.perPage ? { perPage: params.perPage } : {}),
     },

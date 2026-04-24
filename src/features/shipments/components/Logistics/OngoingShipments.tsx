@@ -74,6 +74,7 @@ export function OngoingShipments() {
       title="LIST OF SHIPMENTS"
       subtext="ongoing"
       subtextColor="#17314B"
+      showDivider
     >
       <AppTable
         columns={COLUMNS}

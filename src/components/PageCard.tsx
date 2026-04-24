@@ -1,4 +1,12 @@
-import { Box, Card, Group, Text, Title, UnstyledButton } from "@mantine/core";
+import {
+  Box,
+  Card,
+  Group,
+  Text,
+  Title,
+  UnstyledButton,
+  Divider,
+} from "@mantine/core";
 import { ArrowBack } from "@nine-thirty-five/material-symbols-react/rounded";
 import { useNavigate } from "react-router";
 import classes from "./PageCard.module.css";
@@ -13,7 +21,7 @@ interface PageCardProps {
   fullHeight?: boolean;
   children?: React.ReactNode;
   onBack?: () => void;
-  hideDivider?: boolean;
+  showDivider?: boolean;
   hideBackButton?: boolean;
   bodyPx?: string | number;
   bodyPy?: string | number;
@@ -33,6 +41,7 @@ export function PageCard({
   action,
   fullHeight = false,
   hideBackButton = false,
+  showDivider = false,
   children,
   onBack,
   bodyPx = "xl",
@@ -124,6 +133,15 @@ export function PageCard({
           {action && <Box style={{ flexShrink: 0 }}>{action}</Box>}
         </Group>
       </Group>
+
+      {showDivider && (
+        <Divider
+          size={"sm"}
+          w={"96%"}
+          mx={"auto"}
+          className={classes.divider}
+        />
+      )}
 
       {/* ── Body ── */}
       <Box className={classes.body} px={bodyPx} py={bodyPy}>

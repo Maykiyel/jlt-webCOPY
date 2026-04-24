@@ -73,6 +73,7 @@ export function LicensesShipments() {
       title="LIST OF LICENSES"
       subtext="licenses"
       subtextColor="#17314B"
+      showDivider
     >
       <AppTable
         columns={COLUMNS}

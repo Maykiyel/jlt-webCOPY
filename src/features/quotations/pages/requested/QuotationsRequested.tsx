@@ -47,15 +47,21 @@ export function QuotationsRequested() {
   const {
     search,
     searchQuery,
+    secondarySearch,
+    secondarySearchQuery,
     perPage,
     setPerPage,
     handleSearch,
     handleSearchChange,
+    handleSecondarySearch,
+    handleSecondarySearchChange,
   } = useQuotationTableSearch();
 
   const { data, isLoading, isFetching } = useQuery({
     queryKey: requestedQueryKeys.requestedList({
-      searchQuery: `${searchQuery}|${clientFilter}|${serviceFilter ?? ""}|${statusFilter ?? ""}`,
+      searchQuery,
+      asSearchQuery: secondarySearchQuery,
+      clientFilter,
       perPage,
     }),
     queryFn: () =>
@@ -63,6 +69,7 @@ export function QuotationsRequested() {
         "filter[assignment_status]": statusFilter || undefined,
         "filter[service]": serviceFilter || undefined,
         search: searchQuery || undefined,
+        as_search: secondarySearchQuery || undefined,
         client_type: clientFilter === "ALL" ? undefined : clientFilter,
         perPage,
       }),
@@ -132,9 +139,12 @@ export function QuotationsRequested() {
             <Box>
               <RequestFilterTable
                 quotations={rows}
-                searchValue={search}
-                onSearchChange={handleSearchChange}
-                onSearch={handleSearch}
+                clientSearchValue={search}
+                onClientSearchChange={handleSearchChange}
+                onClientSearch={handleSearch}
+                asSearchValue={secondarySearch}
+                onAsSearchChange={handleSecondarySearchChange}
+                onAsSearch={handleSecondarySearch}
                 perPage={perPage}
                 setPerPage={setPerPage}
                 serviceFilter={serviceFilter}

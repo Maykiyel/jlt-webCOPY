@@ -59,6 +59,7 @@ export function DeliveredShipments() {
       title="LIST OF SHIPMENTS"
       subtext="Delivered"
       subtextColor="#17314B"
+      showDivider
     >
       <AppTable
         columns={COLUMNS}
