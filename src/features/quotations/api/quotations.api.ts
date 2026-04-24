@@ -135,17 +135,28 @@ interface FetchRequestedQuotationsParams {
   search?: string;
   client_type?: "NEW" | "OLD";
   perPage?: number;
+  "filter[assignment_status]"?: string;
+  "filter[created_at]"?: string;
+  "filter[service]"?: string;
 }
 
 export async function fetchRequestedQuotations(
   params: FetchRequestedQuotationsParams,
 ): Promise<RequestedQuotationsResponse> {
-  console.log("khate", params);
   const response = await apiClient.get<{
     data: RequestedQuotationsResponse | [];
   }>("/quotations", {
     params: {
       "filter[status]": "REQUESTED",
+      ...(params["filter[assignment_status]"]
+        ? { "filter[assignment_status]": params["filter[assignment_status]"] }
+        : {}),
+      ...(params["filter[created_at]"]
+        ? { "filter[created_at]": params["filter[created_at]"] }
+        : {}),
+      ...(params["filter[service]"]
+        ? { "filter[service]": params["filter[service]"] }
+        : {}),
       ...(params.search ? { search: params.search } : {}),
       ...(params.client_type ? { client_type: params.client_type } : {}),
       ...(params.perPage ? { perPage: params.perPage } : {}),

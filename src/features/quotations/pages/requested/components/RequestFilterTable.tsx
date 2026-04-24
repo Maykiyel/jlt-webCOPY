@@ -1,6 +1,5 @@
 import { useMemo, useState } from "react";
 import {
-  ActionIcon,
   Button,
   Divider,
   Group,
@@ -12,9 +11,9 @@ import {
 import { ChevronRight, CalendarMonth, Search } from "@nine-thirty-five/material-symbols-react/rounded";
 import type { RequestedQuotationListItem } from "@/features/quotations/types/quotations.types";
 
-const entryOptions = ["10", "25", "50"];
-
 type RequestedQuotationRow = RequestedQuotationListItem;
+type ServiceFilterValue = "LOGISTICS" | "REGULATORY" | null;
+type StatusFilterValue = "AVAILABLE" | "REASSIGN REQUESTED" | null;
 
 interface RequestFilterTableProps {
   quotations: RequestedQuotationRow[];
@@ -22,8 +21,13 @@ interface RequestFilterTableProps {
   onSearchChange: (value: string) => void;
   onSearch: (value: string) => void;
   perPage: number;
-  onPerPageChange: (value: number) => void;
+  setPerPage?: (value: number) => void;
+  serviceFilter: ServiceFilterValue;
+  setServiceFilter: (value: ServiceFilterValue) => void;
+  statusFilter: StatusFilterValue;
+  setStatusFilter: (value: StatusFilterValue) => void;
   searchPlaceholder?: string;
+  total?: number;
 }
 
 function toTitleCase(value: string) {
@@ -49,24 +53,34 @@ export function RequestFilterTable({
   onSearchChange,
   onSearch,
   perPage,
-  onPerPageChange,
-  searchPlaceholder = "SEARCH REFERENCE OR CLIENT",
+  serviceFilter,
+  setServiceFilter,
+  statusFilter,
+  setStatusFilter,
+  setPerPage,
+  total = 10,
 }: RequestFilterTableProps) {
   const [dateFilter, setDateFilter] = useState("");
-  const [serviceFilter, setServiceFilter] = useState<string | null>(null);
-  const [statusFilter, setStatusFilter] = useState<string | null>(null);
 
-  const serviceOptions = useMemo(() => {
-    const values = new Set<string>();
+  //for drop down ahow entries
+  const entryOptions = useMemo(() => {
+    if (total <= 0) return ["10"];
 
-    quotations.forEach((row) => {
-      if (row.service) {
-        values.add(toTitleCase(row.service));
-      }
-    });
+    const options = new Set<number>();
+    const increment = 10;
 
-    return Array.from(values).map((value) => ({ value, label: value }));
-  }, [quotations]);
+    for (let i = increment; i < total; i += increment) {
+      options.add(i);
+    }
+
+    options.add(total);
+
+    return Array.from(options)
+      .sort((a, b) => a - b)
+      .map(String);
+  }, [total]);
+
+  const serviceOptions = ["LOGISTICS", "REGULATORY", "ALL SERVICES"];
 
   const statusOptions = useMemo(() => {
     const values = new Set<string>();
@@ -85,7 +99,6 @@ export function RequestFilterTable({
           w={300}
           size="sm"
           rightSectionWidth={45}
-          placeholder={searchPlaceholder}
           value={searchValue}
           onChange={(event) => onSearchChange(event.currentTarget.value)}
           onKeyDown={(event) => {
@@ -133,10 +146,15 @@ export function RequestFilterTable({
         <Select
           w={185}
           size="sm"
-          placeholder="ALL SERVICES"
           data={serviceOptions}
-          value={serviceFilter}
-          onChange={setServiceFilter}
+          value={serviceFilter === null ? "ALL SERVICES" : serviceFilter}
+          onChange={(value) => {
+            if (value === "LOGISTICS" || value === "REGULATORY") {
+              setServiceFilter(value);
+              return;
+            }
+            setServiceFilter(null);
+          }}
           rightSection={<ChevronRight width={16} />}
         />
 
@@ -146,7 +164,13 @@ export function RequestFilterTable({
           placeholder="SELECT STATUS"
           data={statusOptions}
           value={statusFilter}
-          onChange={setStatusFilter}
+          onChange={(value) => {
+            if (value === "AVAILABLE" || value === "REASSIGN REQUESTED") {
+              setStatusFilter(value);
+              return;
+            }
+            setStatusFilter(null);
+          }}
           rightSection={<ChevronRight width={16} />}
         />
 
@@ -179,7 +203,7 @@ export function RequestFilterTable({
           value={String(perPage)}
           onChange={(value) => {
             if (value) {
-              onPerPageChange(Number(value));
+              setPerPage?.(Number(value));
             }
           }}
         />

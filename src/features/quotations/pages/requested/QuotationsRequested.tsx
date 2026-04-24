@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
-import { Box, Button, Group, Modal, Stack, Text } from "@mantine/core";
+import { useState } from "react";
+import { Box, Stack } from "@mantine/core";
 import { useNavigate } from "react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 
@@ -15,27 +15,32 @@ import type { RequestedQuotationListItem } from "@/features/quotations/types/quo
 
 import { requestedQueryKeys } from "./utils/requestedQueryKeys";
 
-import { RequestFilterClient } from "./components/requestFilterClient";
-import { RequestFilterTable } from "./components/requestFilterTable";
-import { RequestTable } from "./components/requestTable";
+import { RequestFilterClient } from "./components/RequestFilterClient";
+import { RequestFilterTable } from "./components/RequestFilterTable";
+import { RequestTable } from "./components/RequestTable";
 import ReassignModal from "./components/ReassignModal";
 import AcceptModal from "./components/AcceptModal";
 
 export function QuotationsRequested() {
   const [selectedQuotation, setSelectedQuotation] =
     useState<RequestedQuotationListItem | null>(null);
+
   const [acceptModalOpen, setAcceptModalOpen] = useState(false);
   const [reassignModalOpen, setReassignModalOpen] = useState(false);
-  const [selectedReassignAsId, setSelectedReassignAsId] = useState<
-    string | null
-  >(null);
 
-  const [jobFilter, setJobFilter] = useState<"all" | "my-jobs" | "my-quotes">(
-    "all",
-  );
+  const [jobFilter, setJobFilter] = useState<"all" | "my-items">("all");
+
   const [clientFilter, setClientFilter] = useState<"ALL" | "NEW" | "OLD">(
     "ALL",
   );
+
+  const [serviceFilter, setServiceFilter] = useState<
+    "LOGISTICS" | "REGULATORY" | null
+  >(null);
+
+  const [statusFilter, setStatusFilter] = useState<
+    "AVAILABLE" | "REASSIGN REQUESTED" | null
+  >(null);
 
   const navigate = useNavigate();
   const queryClient = useQueryClient();
@@ -48,21 +53,20 @@ export function QuotationsRequested() {
     handleSearchChange,
   } = useQuotationTableSearch();
 
-  const { data, isLoading, isFetching, refetch } = useQuery({
-    queryKey: requestedQueryKeys.requestedList({ searchQuery, perPage }),
+  const { data, isLoading, isFetching } = useQuery({
+    queryKey: requestedQueryKeys.requestedList({
+      searchQuery: `${searchQuery}|${clientFilter}|${serviceFilter ?? ""}|${statusFilter ?? ""}`,
+      perPage,
+    }),
     queryFn: () =>
       fetchRequestedQuotations({
+        "filter[assignment_status]": statusFilter || undefined,
+        "filter[service]": serviceFilter || undefined,
         search: searchQuery || undefined,
         client_type: clientFilter === "ALL" ? undefined : clientFilter,
         perPage,
       }),
   });
-
-  useEffect(() => {
-  void refetch();
-}, [clientFilter, refetch])
-
-  console.log("khate", data)
 
   const rows =
     jobFilter === "all" ? data?.quotations || [] : data?.my_quotations || [];
@@ -93,8 +97,11 @@ export function QuotationsRequested() {
 
   const openReassignModal = (row: RequestedQuotationListItem) => {
     setSelectedQuotation(row);
-    setSelectedReassignAsId(null);
     setReassignModalOpen(true);
+  };
+
+  const handleJobSwitchChange = (value: "all" | "my-items") => {
+    setJobFilter(value);
   };
 
   return (
@@ -103,9 +110,9 @@ export function QuotationsRequested() {
         title="LIST OF NEW REQUEST"
         showJobSwitch
         jobSwitchValue={jobFilter}
-        onJobSwitchChange={setJobFilter}
-        jobSwitchSecondaryValue="my-quotes"
-        jobSwitchSecondaryLabel="MY QUOTES"
+        onJobSwitchChange={handleJobSwitchChange}
+        jobSwitchSecondaryValue="my-items"
+        jobSwitchSecondaryLabel="MY ITEMS"
       >
         <Stack gap="xs">
 
@@ -129,7 +136,12 @@ export function QuotationsRequested() {
                 onSearchChange={handleSearchChange}
                 onSearch={handleSearch}
                 perPage={perPage}
-                onPerPageChange={setPerPage}
+                setPerPage={setPerPage}
+                serviceFilter={serviceFilter}
+                setServiceFilter={setServiceFilter}
+                statusFilter={statusFilter}
+                setStatusFilter={setStatusFilter}
+                total={data?.counts.all_quotations}
               />
 
               <RequestTable
