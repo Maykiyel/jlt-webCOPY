@@ -20,7 +20,13 @@ import type { RequestedQuotationListItem } from "@/features/quotations/types/quo
 
 type RequestedQuotationRow = RequestedQuotationListItem;
 
-const tableHead = ["REQUEST", "DETAILS", "STATUS", ""] as const;
+const tableHead = [
+  "REQUEST",
+  "DETAILS",
+  "PERSON IN CHARGE",
+  "STATUS",
+  "",
+] as const;
 
 interface RequestTableProps {
   rows: RequestedQuotationRow[];
@@ -118,7 +124,7 @@ export function RequestTable({
                   onClick={onRowClick ? () => onRowClick(row) : undefined}
                   style={onRowClick ? { cursor: "pointer" } : undefined}
                 >
-                  <Table.Td style={{ minWidth: "16.25rem" }}>
+                  <Table.Td style={{maxWidth: "150px"}}>
                     <Stack gap={2}>
                       <Text c="#334155" fz="0.875rem" fw={700}>
                         {row.reference_number}
@@ -132,7 +138,7 @@ export function RequestTable({
                     </Stack>
                   </Table.Td>
 
-                  <Table.Td style={{ minWidth: "22.5rem" }}>
+                  <Table.Td style={{maxWidth: "250px"}}>
                     <Stack gap={2}>
                       <Text c="#2a4058" fz="0.875rem" fw={700}>
                         {getServiceLabel(row.service)}
@@ -148,7 +154,7 @@ export function RequestTable({
                             ---&gt; {""}
                             {toTitleCase(row.logistics_service.transport_mode)}
                           </Text>
-                          <Group align="center" wrap="nowrap">
+                          <Group gap={6} align="center" wrap="nowrap">
                             <Text c="#475569" fz="0.813rem" lh={1.45}>
                               {row.logistics_service.origin}
                             </Text>
@@ -159,7 +165,7 @@ export function RequestTable({
                           </Group>
                         </>
                       ) : row.regulatory_service ? (
-                        <Group>
+                        <Group gap={6} align="center" wrap="nowrap">
                           <Text c="#475569" fz="0.813rem" lh={1.45}>
                             Application Type
                           </Text>
@@ -178,7 +184,19 @@ export function RequestTable({
                     </Stack>
                   </Table.Td>
 
-                  <Table.Td style={{ minWidth: "18.125rem" }}>
+                  <Table.Td>
+                    {row.account_specialist !== null ? (
+                      <Text c="#334155" fz="0.75rem" lh={1.4}>
+                        {row.account_specialist}
+                      </Text>
+                    ) : (
+                      <Text c="#334155" fz="0.75rem" lh={1.4}>
+                        Unassigned
+                      </Text>
+                    )}
+                  </Table.Td>
+
+                  <Table.Td style={{maxWidth: "150px"}}>
                     <Stack gap={4}>
                       <Button
                         styles={{ root: { background: statusButtonBg(row) } }}
@@ -206,11 +224,6 @@ export function RequestTable({
                       >
                         {getStatusLabel(row)}
                       </Button>
-                      {row.account_specialist && (
-                        <Text c="#334155" fz="0.75rem" lh={1.4}>
-                          {row.account_specialist}
-                        </Text>
-                      )}
                       {row.assignment_status === "AVAILABLE" && (
                         <Text c="#16803d" fz="0.75rem" fw={700} lh={1.4}>
                           {toTitleCase(row.assignment_status)}
