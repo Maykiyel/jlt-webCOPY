@@ -5,6 +5,9 @@ interface RequestedListKeyParams {
   searchQuery: string;
   asSearchQuery: string;
   clientFilter: "ALL" | "NEW" | "OLD";
+  serviceFilter: "LOGISTICS" | "REGULATORY" | "ALL";
+  statusFilter: "AVAILABLE" | "ASSIGNED" | "REASSIGNMENT REQUESTED" | "ALL";
+  dateFilter: string;
   perPage: number;
 }
 
@@ -22,6 +25,9 @@ export const requestedQueryKeys = {
     searchQuery,
     asSearchQuery,
     clientFilter,
+    serviceFilter,
+    statusFilter,
+    dateFilter,
     perPage,
   }: RequestedListKeyParams) =>
     [
@@ -29,6 +35,9 @@ export const requestedQueryKeys = {
       searchQuery,
       asSearchQuery,
       clientFilter,
+      serviceFilter,
+      statusFilter,
+      dateFilter,
       perPage,
     ] as const,
   requestedClientList: ({
