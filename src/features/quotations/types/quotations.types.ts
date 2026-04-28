@@ -124,14 +124,24 @@ export interface QuotationResource {
     service_level: string | null;
     message: string | null;
   } | null;
-  quotation_file:
-    | { id: number; file_name: string; file_url: string }[]
-    | "No file available.";
-  documents:
-    | { id: number; file_name: string; file_url: string }[]
-    | "No documents available.";
+  quotation_file: QuotationDocument[] | "No file available.";
+  documents: QuotationDocument[] | "No documents available.";
   remarks: string | null;
   conversation_id: string;
+  person_in_charge: string | null;
+  qtn_created_at: string | null;
+  qtn_accepted_at: string | null;
+  qtn_status: "requested" | "responded" | "accepted" | null;
+}
+
+// ─── Quotation document resource ───────────────────────────────────────────────────
+
+export interface QuotationDocument {
+  id: number;
+  file_name: string;
+  file_url: string;
+  uploadedBy: "JLTCB" | "Client";
+  uploadedDate?: string;
 }
 
 // ─── Quotation file resource ───────────────────────────────────────────────────

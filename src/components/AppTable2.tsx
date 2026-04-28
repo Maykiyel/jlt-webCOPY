@@ -259,7 +259,23 @@ export default function AppTable2({
                   </Table.Td>
 
                   <Table.Td className={classes.cellActions}>
-                    <MoreVert width={16} />
+                    <button
+                      onClick={(event) => {
+                        event.stopPropagation();
+                      }}
+                      style={{
+                        background: "none",
+                        border: "none",
+                        cursor: "pointer",
+                        padding: "4px",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                      }}
+                      aria-label="More actions"
+                    >
+                      <MoreVert width={16} />
+                    </button>
                   </Table.Td>
                 </Table.Tr>
               ))

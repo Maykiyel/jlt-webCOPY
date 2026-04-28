@@ -21,6 +21,8 @@ interface PageCardProps {
   children?: React.ReactNode;
   onBack?: () => void;
   hideDivider?: boolean;
+  hideBackButton?: boolean;
+  bgColor?: string; // e.g., "transparent", "white", or any Mantine color
   bodyPx?: string | number;
   bodyPy?: string | number;
   showJobSwitch?: boolean;
@@ -40,6 +42,8 @@ export function PageCard({
   fullHeight = false,
   children,
   onBack,
+  hideBackButton = false,
+  bgColor = "white",
   bodyPx = "xl",
   bodyPy = "lg",
   showJobSwitch = false,
@@ -62,8 +66,9 @@ export function PageCard({
     <Card
       withBorder={false}
       radius={10}
-      shadow={"sm"}
+      shadow={bgColor === "transparent" ? "none" : "sm"}
       padding={0}
+      bg={bgColor}
       className={classes.root}
       style={{
         height: fullHeight
@@ -80,9 +85,11 @@ export function PageCard({
         className={classes.header}
       >
         <Group gap="xs" wrap="nowrap">
-            <UnstyledButton onClick={handleBack} className={classes.backButton}>
-              <ArrowBack width="1.25rem" height="1.25rem" fill="currentColor" />
-            </UnstyledButton>
+            {!hideBackButton && (
+              <UnstyledButton onClick={handleBack} className={classes.backButton}>
+                <ArrowBack width="1.25rem" height="1.25rem" fill="currentColor" />
+              </UnstyledButton>
+            )}
 
           <Group gap="0.5rem" align="baseline" wrap="nowrap">
             <Title order={5} fw={800} tt="uppercase" c="jltBlue.8">
