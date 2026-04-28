@@ -213,9 +213,22 @@ export function QuotationFileViewer() {
   return (
     <Box className={classes.root}>
       <Box className={classes.topBar}>
-        <ActionIcon variant="subtle" onClick={() => navigate(-1)}>
-          <ArrowBack width="1.25rem" height="1.25rem" />
-        </ActionIcon>
+        <Box>
+          <Group gap="xs" align="center">
+            <ActionIcon variant="subtle" onClick={() => navigate(-1)}>
+              <ArrowBack width="1.25rem" height="1.25rem" />
+            </ActionIcon>
+            <Box>
+              <Text fw={700} c="jltBlue">
+                {quotation?.reference_number ??
+                  viewerState.quotation.reference_number}
+              </Text>
+              <Text size="sm" c="jltBlue">
+                Quoted by: {issuedQuotation?.issued_by ?? "-"}
+              </Text>
+            </Box>
+          </Group>
+        </Box>
 
         <Group gap="sm">
           <ActionIcon
