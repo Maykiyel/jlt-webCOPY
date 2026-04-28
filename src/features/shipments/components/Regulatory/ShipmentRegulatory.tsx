@@ -98,6 +98,7 @@ export function ShipmentRegulatory() {
       title="LIST OF REGULATORY"
       subtext="permits and licenses"
       subtextColor="#17314B"
+      showDivider
     >
       <AppTable
         columns={COLUMNS}

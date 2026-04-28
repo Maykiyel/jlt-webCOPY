@@ -3,22 +3,43 @@ import { quotationQueryKeys } from "@/features/quotations/api/quotationQueryKeys
 
 interface RequestedListKeyParams {
   searchQuery: string;
+  asSearchQuery: string;
+  clientFilter: "ALL" | "NEW" | "OLD";
+  serviceFilter: "LOGISTICS" | "REGULATORY" | "ALL";
+  statusFilter: "AVAILABLE" | "ASSIGNED" | "REASSIGNMENT REQUESTED" | "ALL";
+  dateFilter: string;
   perPage: number;
 }
 
-interface RequestedClientListKeyParams extends RequestedListKeyParams {
+interface RequestedClientListKeyParams {
   clientId?: string;
+  searchQuery: string;
+  perPage: number;
 }
 
 export const requestedQueryKeys = {
   quotationsRoot: quotationQueryKeys.quotationsRoot,
   requestedRoot: () =>
     quotationQueryKeys.byStatusRoot(QUOTATION_STATUS.REQUESTED),
-  requestedList: ({ searchQuery, perPage }: RequestedListKeyParams) =>
-    quotationQueryKeys.byStatusList(QUOTATION_STATUS.REQUESTED, {
+  requestedList: ({
+    searchQuery,
+    asSearchQuery,
+    clientFilter,
+    serviceFilter,
+    statusFilter,
+    dateFilter,
+    perPage,
+  }: RequestedListKeyParams) =>
+    [
+      ...requestedQueryKeys.requestedRoot(),
       searchQuery,
+      asSearchQuery,
+      clientFilter,
+      serviceFilter,
+      statusFilter,
+      dateFilter,
       perPage,
-    }),
+    ] as const,
   requestedClientList: ({
     clientId,
     searchQuery,

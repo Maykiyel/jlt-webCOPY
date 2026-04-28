@@ -69,7 +69,12 @@ export function PermitsShipments() {
   const count = data?.pagination.count ?? 0;
 
   return (
-    <PageCard title="LIST OF PERMITS" subtext="permits" subtextColor="#17314B">
+    <PageCard
+      title="LIST OF PERMITS"
+      subtext="permits"
+      subtextColor="#17314B"
+      showDivider
+    >
       <AppTable
         columns={COLUMNS}
         data={
