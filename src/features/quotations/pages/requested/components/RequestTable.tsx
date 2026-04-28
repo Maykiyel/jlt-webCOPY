@@ -224,7 +224,7 @@ export function RequestTable({
                         </>
                       )}
 
-                      {row.assignment_status === "REASSIGNMENT REQUEST" && (
+                      {row.assignment_status === "REASSIGNMENT REQUESTED" && (
                         <>
                         <Button
                           styles={{ root: { background: statusButtonBg(row) } }}
