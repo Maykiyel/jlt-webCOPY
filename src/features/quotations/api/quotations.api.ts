@@ -194,11 +194,6 @@ export async function fetchRequestedQuotations(
 export async function fetchRespondedQuotations(
   params: FetchRespondedQuotationsParams,
 ): Promise<RespondedQuotationsResponse> {
-  // DESIGN TEST: Return mock data
-  return respondedQuotationsResponseMock;
-
-  /* Original API call - commented for design testing
-  const response = await apiClient.get<{
   const response = await apiClient.get<{
     data: RespondedQuotationsResponse | [];
   }>("/quotations", {
@@ -220,12 +215,12 @@ export async function fetchRespondedQuotations(
     };
   }
 
-  return response.data.data;romise<RespondedQuotationsResponse> {
-  // DESIGN TEST: For now, return responded quotations mock
-  // In production, this would have a separate endpoint
-  return respondedQuotationsResponseMock;
+  return response.data.data;
+}
 
-  /* Original API call - commented for design testing
+export async function fetchAcceptedQuotations(
+  params: FetchRespondedQuotationsParams,
+): Promise<RespondedQuotationsResponse> {
   const response = await apiClient.get<{
     data: RespondedQuotationsResponse | [];
   }>("/quotations", {
@@ -247,7 +242,12 @@ export async function fetchRespondedQuotations(
     };
   }
 
-  return response.data.data;romise<QuotationTemplateSummaryApi[]> {
+  return response.data.data;
+}
+
+export async function fetchQuotationTemplates(
+  type?: ComposeTemplateType,
+): Promise<QuotationTemplateSummaryApi[]> {
   const response = await apiClient.get<{ data: QuotationTemplateSummaryApi[] }>(
     "/templates",
     {
