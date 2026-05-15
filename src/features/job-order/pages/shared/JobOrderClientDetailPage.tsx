@@ -1,7 +1,6 @@
 import { Center, Loader, Stack, Text } from "@mantine/core";
 import { useQuery } from "@tanstack/react-query";
-import { useNavigate, useParams, useSearchParams } from "react-router";
-import type { JobOrderServiceType } from "../../types/jobOrder";
+import { useNavigate, useParams } from "react-router";
 import { fetchJobOrderDetail } from "../../api/jobOrderQueries.api";
 import { jobOrdersQueryKeys } from "../../api/jobOrdersQueryKeys";
 import { JobOrderDetailHeader } from "../../components/JobOrderDetailHeader";
@@ -10,12 +9,8 @@ import JobOrderClientDetailSections from "../../components/JobOrderClientDetailS
 export default function JobOrderClientDetailPage() {
   const navigate = useNavigate();
   const params = useParams<{ jobOrderId?: string }>();
-  const [searchParams] = useSearchParams();
   const jobOrderId = params.jobOrderId;
-  const serviceType = searchParams.get("service") as JobOrderServiceType | null;
 
-
-  console.log(params.jobOrderId)
   const { data: detail, isLoading } = useQuery({
     queryKey: jobOrdersQueryKeys.detail(jobOrderId),
     queryFn: () => {
@@ -26,8 +21,6 @@ export default function JobOrderClientDetailPage() {
     },
     enabled: Boolean(jobOrderId),
   });
-
-  console.log(detail)
 
   if (!jobOrderId) return null;
 
@@ -46,17 +39,6 @@ export default function JobOrderClientDetailPage() {
 
   if (!detail) return null;
 
-  const serviceTypeFromDetail =
-    detail.service?.service_type ??
-    detail.service?.type ??
-    detail.job_type ??
-    detail.service_type ??
-    null;
-  const isRegulatory =
-    serviceType === "Regulatory" ||
-    serviceTypeFromDetail === "Regulatory" ||
-    serviceTypeFromDetail === "REGULATORY";
-
   return (
     <Stack gap="lg" p="lg">
       <JobOrderDetailHeader
@@ -66,7 +48,7 @@ export default function JobOrderClientDetailPage() {
         onBack={() => navigate(-1)}
       />
 
-      <JobOrderClientDetailSections />
+      <JobOrderClientDetailSections detail={detail} />
     </Stack>
   );
 }
